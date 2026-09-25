@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+  <AddIn Type="DBApplication">
+    <Name>SheetExporter</Name>
+    <!-- GUID propio, generado una sola vez para este addin. No lo cambies despues de compilar. -->
+    <Assembly>./SheetExporter.dll</Assembly>
+    <AddInId>8f2c7f2e-2f3f-4b3a-9a3e-6e7a0a2f6a10</AddInId>
+    <FullClassName>SheetExporter.App</FullClassName>
+    <VendorId>GCPEASA</VendorId>
+    <VendorDescription>GCPEASA - PLANOS_VENTAS</VendorDescription>
+  </AddIn>
+</RevitAddIns>

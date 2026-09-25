@@ -1,0 +1,41 @@
+{
+  "title": "Planos Forma vs Revit · VENTAS GCP",
+  "subtitulo": "Forma vs Revit · VENTAS GCP",
+  "output_dir": "reporte",
+  "cache_dir": "cache",
+
+  "aps": {
+    "account_id": "17fefe95-3b69-4d44-bb94-0cbec2173aea",
+    "project_id": "5f587011-eb8e-4072-b4df-f16aee3915aa"
+  },
+
+  "raiz_nombres": ["Project Files", "Archivos de proyecto", "Plans"],
+  "excluir_proyectos": [],
+
+  "subcarpeta_datos": "011_WIP",
+
+  "integrante_campo_revit": "added_by",
+
+  "file_rules": { "default": ["pdf"] },
+
+  "revit": {
+    "excluir_regex": "\\.\\d{4}\\.rvt$",
+    "sheet_view_regex": "^\\s*(?P<num>.+?)\\s+-\\s+(?P<name>.+?)\\s*$",
+    "excluir_hojas_regex": [
+      "_TRABAJO$", "_WIP$", "_BORRADOR$", "_DRAFT$", "_INTERNO$", "_NO\\s*PUBLICAR$",
+      "^WIP[_\\s-]", "^TRABAJO[_\\s-]", "^BORRADOR[_\\s-]", "^X[_\\s-]"
+    ]
+  },
+
+  "equipos_xlsx": "C:\\Users\\Usuario\\DC\\ACCDocs\\GCPEASA\\GCP_TRANSFORMACIÓN_DIGITAL\\Project Files\\01_IMPLEMENTACIÓN_BIM\\0112_SQDCM\\Equipos e integrantes - VENTAS.xlsx",
+  "equipos_hoja": "Integrantes",
+
+  "verificar_origen": false,
+
+  "design_automation": {
+    "nickname": "planosventas",
+    "activity": "SheetExporterActivity",
+    "engine": "Autodesk.Revit+2025",
+    "bucket": "planosventas-da-bucket"
+  }
+}

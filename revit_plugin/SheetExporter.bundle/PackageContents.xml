@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage SchemaVersion="1.0" AutodeskProduct="Revit" ProductType="Application"
+    Name="SheetExporter" AppVersion="1.0.0" Author="GCPEASA">
+  <CompanyDetails Name="GCPEASA" Url="https://gcpeasa.com" Email="" />
+  <Components Description="Exporta la lista de hojas (Sheets) de un modelo Revit a JSON, para Design Automation.">
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2025" SeriesMax="R2025" />
+    <ComponentEntry AppName="SheetExporter" Version="1.0.0" ModuleName="./Contents/SheetExporter.addin"
+        AppDescription="Exportador de hojas Revit" LoadOnCommandInvocation="False" LoadOnRevitStartup="True" />
+  </Components>
+</ApplicationPackage>

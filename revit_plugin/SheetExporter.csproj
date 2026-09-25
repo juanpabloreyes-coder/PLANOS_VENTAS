@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Revit 2025 corre sobre .NET 8. Si tu Activity usa otra version de Revit (2022-2024),
+         cambia a net48 y ajusta las referencias de RevitAPI*.dll a esa version instalada. -->
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <UseWindowsForms>false</UseWindowsForms>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>SheetExporter</AssemblyName>
+    <RootNamespace>SheetExporter</RootNamespace>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Ajusta esta ruta a donde tengas instalado Revit 2025 en tu maquina de compilacion. -->
+    <Reference Include="RevitAPI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2025\RevitAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2025\RevitAPIUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- El paquete NuGet trae DesignAutomationBridge.dll en la raiz del paquete (no en lib\),
+         asi que NuGet no lo referencia automaticamente via PackageReference: hay que apuntar
+         directo al DLL dentro de la cache local de NuGet. Ajusta la version en la ruta si
+         cambia. Private=true porque este SI debe copiarse dentro del AppBundle (no es parte
+         del propio Revit, a diferencia de RevitAPI/RevitAPIUI). -->
+    <Reference Include="DesignAutomationBridge">
+      <HintPath>$(NuGetPackageRoot)autodesk.forge.designautomation.revit\2025.0.0\DesignAutomationBridge.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

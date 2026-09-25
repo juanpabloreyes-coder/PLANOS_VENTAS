@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>SheetSync</Name>
+    <!-- GUID propio, generado una sola vez para este addin. No lo cambies despues de instalarlo. -->
+    <Assembly>./SheetSync.dll</Assembly>
+    <AddInId>4a1d9b7e-6c2a-4e9f-8a3d-1f6b9c2e7d40</AddInId>
+    <FullClassName>SheetSync.App</FullClassName>
+    <VendorId>GCPEASA</VendorId>
+    <VendorDescription>GCPEASA - PLANOS_VENTAS</VendorDescription>
+  </AddIn>
+</RevitAddIns>

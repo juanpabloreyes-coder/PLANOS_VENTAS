@@ -1,0 +1,24 @@
+# Datos generados por el pipeline -- no son código, se regeneran solos
+cache/
+reporte/
+RevitSheetLog/
+*.log
+report.txt
+reporte_workitem.txt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Compilados de los add-ins de Revit (se generan con dotnet build)
+revit_plugin/bin/
+revit_plugin/obj/
+revit_plugin/SheetExporter.bundle.zip
+revit_addin_sync/bin/
+revit_addin_sync/obj/
+
+# Nunca subir credenciales, por si algun dia aparecen en un archivo local
+.env
+*.env
