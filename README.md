@@ -34,9 +34,13 @@ python tests\test_parsing.py                 # pruebas de la lógica
 python -m plano_sync demo --out demo         # reporte con datos SINTÉTICOS (ya incluido en demo\)
 python -m plano_sync probe -n 3              # imprime hojas crudas de 3 modelos: valida el formato de nombre de hoja
 ejecutar.bat                                 # corrida real -> reporte\index.html
-programar_tarea.bat                          # actualización automática diaria 06:00
+run_pipeline.bat                             # lo que corre la tarea programada (ver abajo)
+programar_tarea.bat                          # registra la tarea de Windows (una sola vez)
 ```
 Para publicarlo en el portal, copia `reporte\index.html` donde publican los demás reportes.
+
+## Automatización
+`programar_tarea.bat` registra una tarea de Windows (`PlanoSync_VENTAS_Mensual`) que se lanza **todos los días a las 23:59**, pero `run_pipeline.bat` solo ejecuta el pipeline cuando ese día es realmente el **último día del mes** (evita el problema de sintaxis de `schtasks /d LASTDAY` en Windows en español). El resto de los días no hace nada. Para correrlo manualmente fuera de ese horario, usa `ejecutar.bat`.
 
 ## Supuestos a validar (no pude probarlos contra tu cuenta de ACC)
 1. **IDs de cuenta y proyecto** en `config.json` los tomé de la consulta `DimProyectoConcurso` de ISSUES_VENTAS (`Account` y `Project` de *Project Extracts*). Confirma que el GUID de proyecto corresponde a «VENTAS GCP».
