@@ -21,6 +21,14 @@ class APSError(RuntimeError):
     pass
 
 
+def nombre_carpeta(d):
+    """Nombre ACTUAL de una carpeta. Cuando se renombra en Forma, 'displayName' puede quedarse con
+    el nombre anterior (HOWA seguia apareciendo como 'Z_PLANTILLA - copia' y se omitia como
+    plantilla); 'name' si se actualiza. Mismo ajuste que en PUBLICACIONES_VENTAS/pub_sync."""
+    a = d.get("attributes", {})
+    return a.get("name") or a.get("displayName") or ""
+
+
 class APS:
     def __init__(self, client_id, client_secret,
                  scope="data:read data:write viewables:read account:read "
@@ -67,7 +75,7 @@ class APS:
 
     def top_folders(self, hub, pid):
         j = self.req("GET", f"/project/v1/hubs/{quote(hub, safe='')}/projects/{quote(pid, safe='')}/topFolders").json()
-        return [{"id": d["id"], "name": d["attributes"].get("displayName") or d["attributes"].get("name", "")}
+        return [{"id": d["id"], "name": nombre_carpeta(d)}
                 for d in j.get("data", [])]
 
     def child_folders(self, pid, folder_id):
@@ -78,7 +86,7 @@ class APS:
             for d in j.get("data", []):
                 if d["type"] == "folders":
                     a = d["attributes"]
-                    out.append({"id": d["id"], "name": a.get("displayName") or a.get("name", "")})
+                    out.append({"id": d["id"], "name": nombre_carpeta(d)})
             url = (j.get("links", {}).get("next") or {}).get("href")
         return out
 
@@ -92,7 +100,7 @@ class APS:
             inc = {i["id"]: i for i in j.get("included", [])}
             for d in j.get("data", []):
                 a = d.get("attributes", {})
-                nm = a.get("displayName") or a.get("name", "")
+                nm = nombre_carpeta(d) if d["type"] == "folders" else (a.get("displayName") or a.get("name", ""))
                 if d["type"] == "folders":
                     if recursive:
                         yield from self.list_files(pid, d["id"], f"{path}/{nm}", True)
