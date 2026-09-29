@@ -282,7 +282,7 @@ def filas_revit(aps, pid, archivos, cfg, clasif, cache_dir="cache"):
         if carpeta_local:
             from . import local_sheets
             pares_directos = local_sheets.hojas_locales(carpeta_local, m["proyecto"], nombre_modelo,
-                                                          requerir_proyecto)
+                                                          requerir_proyecto, urn=m.get("item_id"))
             if pares_directos:
                 usados_local += 1
                 for num, nom in pares_directos:
