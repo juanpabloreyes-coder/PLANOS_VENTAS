@@ -53,3 +53,11 @@ Para publicarlo en el portal, copia `reporte\index.html` donde publican los dem�
 
 ## Alcance: qué demuestra y qué no
 El reporte compara **nombres**: dice si existe una hoja en Revit con ese número/nombre. **No prueba** que el PDF se generó en Revit (un PDF de CAD con el mismo nombre saldría como coincidencia). Existe una verificación opcional por metadatos del PDF (`"verificar_origen": true`, módulo `origin.py`), pero es solo un indicio y hay que calibrar sus firmas con PDF de origen conocido.
+
+## Sin gasto de API (`revit.traducir_sin_addin`)
+- `false` (configuracion actual): PLANOS **nunca** llama a Model Derivative ni a Design Automation.
+  Las hojas salen del add-in SheetSync (`03371_PLANOS_VENTAS`). Si un modelo aun no tiene hojas del
+  add-in, se usan las que quedaron guardadas en `cache\hojas_revit.json` (ultima version traducida de
+  ese modelo, pueden no estar al dia); si nunca se tradujo, el modelo no se incluye y sale en los avisos.
+- `true`: comportamiento anterior (traduce en Autodesk los modelos sin hojas del add-in; consume cuota).
+- `python -m plano_sync probe` sigue disponible para urgencias y **si** consume cuota.

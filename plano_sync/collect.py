@@ -186,6 +186,27 @@ def es_hoja_de_trabajo(view_name, patrones):
     return any(re.search(p, t, re.I) for p in patrones)
 
 
+def _ultima_en_cache(cache, version_urn):
+    """Hojas guardadas del mismo modelo: primero las de esta version exacta; si no hay, las de la
+    version mas reciente que se haya traducido (Model Derivative o Design Automation).
+    -> (clave, hojas) o (None, None)."""
+    base = str(version_urn).split("?", 1)[0]
+    mejor, mejor_rango = (None, None), None
+    for k, v in cache.d.items():
+        urn = k[4:] if k.startswith("da::") else k
+        if urn.split("?", 1)[0] != base or v is None:
+            continue
+        try:
+            n = int(urn.split("version=", 1)[1].split("&", 1)[0])
+        except Exception:
+            n = 0
+        # Gana: con hojas > sin hojas; luego la version exacta; luego la version mas reciente.
+        rango = (bool(v), urn == version_urn, n)
+        if mejor_rango is None or rango > mejor_rango:
+            mejor, mejor_rango = (k, v), rango
+    return mejor
+
+
 def filas_revit(aps, pid, archivos, cfg, clasif, cache_dir="cache"):
     """Hojas de cada .rvt, asignadas al proyecto (carpeta de primer nivel) donde vive el modelo.
     Excluye .rvt de respaldo (excluir_regex) y hojas marcadas como de trabajo (revit.excluir_hojas_regex,
@@ -207,18 +228,61 @@ def filas_revit(aps, pid, archivos, cfg, clasif, cache_dir="cache"):
     da_cfg = cfg.get("design_automation")
     carpeta_local = rc.get("carpeta_log_local")
     usados_local = 0
+    # true (por defecto) = como siempre: si un modelo no tiene hojas del add-in se traduce en Autodesk.
+    # false = nunca se traduce (sin gasto de API); ver _ultima_en_cache.
+    traducir = rc.get("traducir_sin_addin", True)
+    sin_addin_cache, sin_addin_ignorados = [], []
+
+    # El add-in local (SheetSync) no puede saber de forma confiable en que proyecto de ACC vive
+    # cada modelo con solo mirar el archivo -- la API de Revit no expone esa jerarquia de carpetas
+    # para modelos en la nube, y probamos que tampoco sirve el GUID interno del modelo (no
+    # corresponde al identificador que usa la API). Para nombres de modelo que se repiten en mas
+    # de un proyecto (p.ej. "12_ARQ_NAVE.rvt" existe tanto en GRANJAS JESSY como en GONVAUTO F2),
+    # el add-in le pregunta a la persona una sola vez por modelo (ver revit_addin_sync/SheetSync.cs)
+    # y guarda su respuesta -- por eso aqui escribimos "_modelos_duplicados.json" con la lista de
+    # proyectos candidatos por nombre, para que el add-in solo ofrezca opciones reales (no texto
+    # libre). Aun asi, mas abajo (local_sheets.hojas_locales con requerir_proyecto=True) SIEMPRE
+    # se exige que el "proyecto" que trae el .json coincida exactamente con el que ya sabemos por
+    # la API -- si alguien se equivoca en el desplegable, ese modelo puntual simplemente no se
+    # beneficia del add-in (cae al metodo de siempre), pero nunca se mezclan hojas entre proyectos.
+    nombres_por_proyecto = {}
+    for m in modelos:
+        nombres_por_proyecto.setdefault(Path(m["name"]).stem, set()).add(m["proyecto"])
+    nombres_duplicados = {n for n, proys in nombres_por_proyecto.items() if len(proys) > 1}
+    if nombres_duplicados:
+        log.warning("Nombres de modelo repetidos en mas de un proyecto (el add-in local pedira "
+                    "confirmar el proyecto la primera vez que se sincronicen): %s",
+                    ", ".join(sorted(nombres_duplicados)))
+        candidatos_json = json.dumps(
+            {n: sorted(nombres_por_proyecto[n]) for n in nombres_duplicados},
+            ensure_ascii=False, indent=2)
+        # Se escribe en dos carpetas: la propia de PLANOS_VENTAS (carpeta_log_local, por
+        # compatibilidad con instalaciones viejas del add-in) y la compartida con
+        # PUBLICACIONES_VENTAS (carpeta_compartida) -- asi RevitSyncLogger tambien la lee y no
+        # hace falta un pipeline Python aparte para ese sistema.
+        for carpeta_destino in {carpeta_local, rc.get("carpeta_compartida")} - {None}:
+            try:
+                candidatos_path = Path(carpeta_destino) / "_modelos_duplicados.json"
+                candidatos_path.write_text(candidatos_json, encoding="utf-8")
+            except Exception as e:
+                log.warning("No se pudo escribir _modelos_duplicados.json en %s: %s", carpeta_destino, e)
+
     for m in modelos:
         nombres_vistas = None  # nombres tipo 'NUM - NOMBRE' (via Model Derivative)
         pares_directos = None  # [(numero, nombre), ...] ya separados (via Design Automation o add-in local)
+        nombre_modelo = Path(m["name"]).stem
+        requerir_proyecto = nombre_modelo in nombres_duplicados
 
         # 1) Add-in local (SheetSync, ver revit_addin_sync/) -- sin API, sin costo. Si el modelo
         #    todavia no tiene datos ahi (nadie con el add-in instalado lo ha sincronizado), sigue
-        #    de largo y usa el metodo de siempre (Model Derivative / Design Automation) mas abajo,
-        #    exactamente como funcionaba antes de tener esta opcion.
+        #    de largo: con traducir_sin_addin=true usa Model Derivative / Design Automation; con
+        #    false solo usa hojas ya guardadas en el cache. Para nombres duplicados
+        #    (requerir_proyecto=True), local_sheets exige ademas que el "proyecto" del .json
+        #    coincida exactamente con el de la API.
         if carpeta_local:
             from . import local_sheets
-            nombre_modelo = Path(m["name"]).stem
-            pares_directos = local_sheets.hojas_locales(carpeta_local, nombre_modelo)
+            pares_directos = local_sheets.hojas_locales(carpeta_local, m["proyecto"], nombre_modelo,
+                                                          requerir_proyecto)
             if pares_directos:
                 usados_local += 1
                 for num, nom in pares_directos:
@@ -233,35 +297,51 @@ def filas_revit(aps, pid, archivos, cfg, clasif, cache_dir="cache"):
                 continue
             pares_directos = None
 
-        try:
-            vistas = cache.get(m["version_urn"])
-            if vistas is None:
-                vistas = aps.views_2d(m["version_urn"])
-                cache.set(m["version_urn"], vistas)
-            nombres_vistas = vistas
-        except Exception as e:
-            log.warning("Modelo %s: %s (se intenta Design Automation si esta configurado)", m["name"], e)
-            if not da_cfg:
-                avisos.append(f"{m['proyecto']} / {m['name']}: {e}")
+        if not traducir:
+            # revit.traducir_sin_addin = false: CERO llamadas a Model Derivative / Design Automation.
+            # Se usan las hojas que ya esten en el cache (de esta version o de la ultima version
+            # traducida de ese mismo modelo). Si el modelo nunca se tradujo, se ignora y se avisa.
+            clave, hojas_cache = _ultima_en_cache(cache, m["version_urn"])
+            if hojas_cache is None:
+                sin_addin_ignorados.append(f"{m['proyecto']} / {m['name']}")
                 continue
-        if not nombres_vistas and da_cfg:
+            sin_addin_cache.append(f"{m['proyecto']} / {m['name']}")
+            if not hojas_cache:
+                continue           # ya se habia revisado y el modelo no tiene hojas
+            if clave.startswith("da::"):
+                pares_directos = [(h.get("numero", ""), h.get("nombre", "")) for h in hojas_cache if h.get("numero")]
+            else:
+                nombres_vistas = hojas_cache
+        else:
             try:
-                from . import design_automation as da
-                clave_da = f"da::{m['version_urn']}"
-                hojas_da = cache.get(clave_da)
-                if hojas_da is None:
-                    hojas_da = da.extraer_hojas(aps, pid, m["version_urn"], cfg)
-                    cache.set(clave_da, hojas_da)
-                pares_directos = [(h.get("numero", ""), h.get("nombre", "")) for h in hojas_da if h.get("numero")]
-                if not pares_directos:
-                    avisos.append(f"{m['proyecto']} / {m['name']}: Design Automation no encontro hojas.")
+                vistas = cache.get(m["version_urn"])
+                if vistas is None:
+                    vistas = aps.views_2d(m["version_urn"])
+                    cache.set(m["version_urn"], vistas)
+                nombres_vistas = vistas
+            except Exception as e:
+                log.warning("Modelo %s: %s (se intenta Design Automation si esta configurado)", m["name"], e)
+                if not da_cfg:
+                    avisos.append(f"{m['proyecto']} / {m['name']}: {e}")
                     continue
-            except Exception as e2:
-                avisos.append(f"{m['proyecto']} / {m['name']}: Model Derivative fallo y Design Automation tambien: {e2}")
-                log.warning("Modelo %s: Design Automation fallo: %s", m["name"], e2)
+            if not nombres_vistas and da_cfg:
+                try:
+                    from . import design_automation as da
+                    clave_da = f"da::{m['version_urn']}"
+                    hojas_da = cache.get(clave_da)
+                    if hojas_da is None:
+                        hojas_da = da.extraer_hojas(aps, pid, m["version_urn"], cfg)
+                        cache.set(clave_da, hojas_da)
+                    pares_directos = [(h.get("numero", ""), h.get("nombre", "")) for h in hojas_da if h.get("numero")]
+                    if not pares_directos:
+                        avisos.append(f"{m['proyecto']} / {m['name']}: Design Automation no encontro hojas.")
+                        continue
+                except Exception as e2:
+                    avisos.append(f"{m['proyecto']} / {m['name']}: Model Derivative fallo y Design Automation tambien: {e2}")
+                    log.warning("Modelo %s: Design Automation fallo: %s", m["name"], e2)
+                    continue
+            elif not nombres_vistas:
                 continue
-        elif not nombres_vistas:
-            continue
 
         if pares_directos is not None:
             for num, nom in pares_directos:
@@ -289,8 +369,21 @@ def filas_revit(aps, pid, archivos, cfg, clasif, cache_dir="cache"):
     cache.save()
     if descartadas:
         avisos.append(f"Se excluyeron {descartadas} hojas marcadas como de trabajo/borrador (revit.excluir_hojas_regex).")
-    if carpeta_local:
+    if carpeta_local and traducir:
         log.info("%d de %d modelos usaron el add-in local (sin API); el resto uso Model Derivative/Design Automation.",
                   usados_local, len(modelos))
+    if not traducir:
+        log.info("Traducciones desactivadas (revit.traducir_sin_addin=false): %d de %d modelos con el add-in, "
+                 "%d con hojas guardadas de una corrida anterior, %d ignorados. Cero llamadas a Model Derivative/Design Automation.",
+                 usados_local, len(modelos), len(sin_addin_cache), len(sin_addin_ignorados))
+        if sin_addin_cache:
+            log.warning("Modelos SIN add-in (hojas de una corrida anterior, pueden no estar al dia): %s",
+                        "; ".join(sin_addin_cache))
+            avisos.append(f"{len(sin_addin_cache)} modelos aun sin el add-in: se usaron sus hojas de una corrida "
+                          f"anterior (pueden no estar al dia).")
+        if sin_addin_ignorados:
+            log.warning("Modelos SIN add-in y sin hojas guardadas (no se incluyen): %s", "; ".join(sin_addin_ignorados))
+            avisos.append(f"{len(sin_addin_ignorados)} modelos nunca sincronizados con el add-in no se incluyeron: "
+                          + "; ".join(sin_addin_ignorados))
     log.info("%d hojas de Revit (%d descartadas por patron de trabajo)", len(rows), descartadas)
     return rows, avisos

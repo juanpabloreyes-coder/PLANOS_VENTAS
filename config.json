@@ -19,12 +19,16 @@
   "file_rules": { "default": ["pdf"] },
 
   "revit": {
+    "traducir_sin_addin": false,
     "excluir_regex": "\\.\\d{4}\\.rvt$",
     "sheet_view_regex": "^\\s*(?P<num>.+?)\\s+-\\s+(?P<name>.+?)\\s*$",
     "excluir_hojas_regex": [
       "_TRABAJO$", "_WIP$", "_BORRADOR$", "_DRAFT$", "_INTERNO$", "_NO\\s*PUBLICAR$",
-      "^WIP[_\\s-]", "^TRABAJO[_\\s-]", "^BORRADOR[_\\s-]", "^X[_\\s-]"
-    ]
+      "^WIP[_\\s-]", "^TRABAJO[_\\s-]", "^BORRADOR[_\\s-]", "^X[_\\s-]",
+      "-\\s*Unnamed$"
+    ],
+    "carpeta_log_local": "C:\\Users\\Usuario\\DC\\ACCDocs\\GCPEASA\\TEMPORAL_GCP_BIM\\Project Files\\03_Common_Resources\\033_Costos_5D\\0337_SQDCM\\03371_PLANOS_VENTAS",
+    "carpeta_compartida": "C:\\Users\\Usuario\\DC\\ACCDocs\\GCPEASA\\TEMPORAL_GCP_BIM\\Project Files\\03_Common_Resources\\033_Costos_5D\\0337_SQDCM"
   },
 
   "equipos_xlsx": "C:\\Users\\Usuario\\DC\\ACCDocs\\GCPEASA\\GCP_TRANSFORMACIÓN_DIGITAL\\Project Files\\01_IMPLEMENTACIÓN_BIM\\0112_SQDCM\\Equipos e integrantes - VENTAS.xlsx",
