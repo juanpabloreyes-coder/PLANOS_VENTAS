@@ -16,17 +16,22 @@ for /f "usebackq delims=" %%T in (`powershell -NoProfile -ExecutionPolicy Bypass
 if not defined OBJETIVO exit /b 0
 
 if not exist cache mkdir cache
-echo ============================================== >> plano_sync.log
-echo Corrida mensual %OBJETIVO%: %date% %time% >> plano_sync.log
+if not exist Automation mkdir Automation
+set PYTHONIOENCODING=utf-8
+REM La salida de la tarea va a Automation\plano_tarea.log: plano_sync.log lo abre Python (FileHandler)
+REM y Windows no deja que dos procesos lo tengan abierto para escribir a la vez.
+set "LOG=Automation\plano_tarea.log"
+echo ============================================== >> "%LOG%"
+echo Corrida mensual %OBJETIVO%: %date% %time% >> "%LOG%"
 
-python -m plano_sync run --config config.json >> plano_sync.log 2>&1
+python -m plano_sync run --config config.json >> "%LOG%" 2>&1
 
 if %ERRORLEVEL% EQU 0 (
     > "%MARCADOR%" echo %OBJETIVO%
-    echo Reporte mensual %OBJETIVO% generado. >> plano_sync.log
+    echo Reporte mensual %OBJETIVO% generado. >> "%LOG%"
 ) else (
-    echo ERROR: no se genero el reporte %OBJETIVO%. Se reintentara en la siguiente corrida. >> plano_sync.log
+    echo ERROR: no se genero el reporte %OBJETIVO%. Se reintentara en la siguiente corrida. >> "%LOG%"
 )
 
-echo Fin de corrida: %date% %time% >> plano_sync.log
-echo ============================================== >> plano_sync.log
+echo Fin de corrida: %date% %time% >> "%LOG%"
+echo ============================================== >> "%LOG%"
