@@ -24,6 +24,8 @@ set "LOG=Automation\plano_tarea.log"
 echo ============================================== >> "%LOG%"
 echo Corrida mensual %OBJETIVO%: %date% %time% >> "%LOG%"
 
+REM Cierre mensual: busqueda completa en ACC, sin usar cache de carpetas
+set VENTAS_COMPLETO=1
 python -m plano_sync run --config config.json >> "%LOG%" 2>&1
 
 if %ERRORLEVEL% EQU 0 (

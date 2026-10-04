@@ -1,0 +1,3 @@
+plano_sync run --config config.json
+reporte\index.html
+grupo=datos-acc

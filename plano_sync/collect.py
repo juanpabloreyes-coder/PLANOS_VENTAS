@@ -7,6 +7,7 @@ y se queda con la carpeta inmediatamente debajo de ella).
 import json
 import logging
 import re
+from datetime import datetime
 from pathlib import Path
 
 from .aps import APS, split_sheet_view_name, DEFAULT_SHEET_REGEX
@@ -64,6 +65,21 @@ def _buscar_subcarpeta(aps, pid, folder_id, nombre, ruta, max_profundidad=6):
     return None, None
 
 
+
+def cache_vigente(guardado):
+    """Regla de cache de carpetas de ACC (igual en todos los reportes):
+    se usa solo si se guardo HOY y la corrida no es completa. Es completa el cierre mensual
+    (run_pipeline.bat pone VENTAS_COMPLETO=1) y la primera corrida de cada dia; asi el cierre nunca
+    se pierde nada y durante el dia las actualizaciones tardan segundos."""
+    import os
+    if os.environ.get("VENTAS_COMPLETO") == "1":
+        return False
+    try:
+        return datetime.fromisoformat(str(guardado)).date() == datetime.now().date()
+    except Exception:
+        return False
+
+
 def recorrer_proyecto(aps, cfg):
     """Devuelve (archivos, pid, avisos). Cada archivo trae 'proyecto' (carpeta de primer nivel dentro
     de Project Files, p.ej. GAP_SJC, HOWA, TUNGALOY...) y 'ruta'.
@@ -81,6 +97,17 @@ def recorrer_proyecto(aps, cfg):
     incl = {x.lower() for x in cfg.get("incluir_proyectos", [])}
     subcarpeta = cfg.get("subcarpeta_datos", "011_WIP")
     out, avisos = [], []
+    # Donde esta la 011_WIP de cada proyecto: buscarla recorre todo el proyecto y es lo que mas tarda.
+    # Se reusa durante el dia (cache_vigente); el contenido de cada 011_WIP (los PDFs) siempre se lee fresco.
+    ubic_p = Path(cfg.get("cache_dir", "cache")) / "ubicacion_wip.json"
+    try:
+        ubic = json.loads(ubic_p.read_text(encoding="utf-8"))
+        if not cache_vigente(ubic.get("guardado")):
+            ubic = {}
+    except Exception:
+        ubic = {}
+    wips_cache = ubic.get("proyectos", {}) if ubic else {}
+    nuevas = {}
 
     if not subcarpeta:
         for f in aps.list_files(pid, raiz["id"], "/" + raiz["name"], recursive=False):
@@ -96,12 +123,35 @@ def recorrer_proyecto(aps, cfg):
             for f in aps.list_files(pid, sub["id"], f"/{raiz['name']}/{sub['name']}", recursive=True):
                 out.append({**f, "proyecto": sub["name"]})
             continue
-        wip, ruta_wip = _buscar_subcarpeta(aps, pid, sub["id"], subcarpeta, f"/{raiz['name']}/{sub['name']}")
-        if not wip:
+        base = f"/{raiz['name']}/{sub['name']}"
+        if sub["id"] in wips_cache:
+            wip_id, ruta_wip = wips_cache[sub["id"]] or (None, None)
+        else:
+            wip, ruta_wip = _buscar_subcarpeta(aps, pid, sub["id"], subcarpeta, base)
+            wip_id = wip["id"] if wip else None
+        if not wip_id:
+            nuevas[sub["id"]] = None
             avisos.append(f"Proyecto '{sub['name']}': no se encontró la carpeta '{subcarpeta}' en ningún nivel; se omitió.")
             continue
-        for f in aps.list_files(pid, wip["id"], ruta_wip, recursive=True):
+        try:
+            archivos = list(aps.list_files(pid, wip_id, ruta_wip, recursive=True))
+        except Exception:
+            if sub["id"] not in wips_cache:
+                raise
+            # La 011_WIP guardada ya no existe (se movio o borro): se busca de nuevo
+            wip, ruta_wip = _buscar_subcarpeta(aps, pid, sub["id"], subcarpeta, base)
+            wip_id = wip["id"] if wip else None
+            archivos = list(aps.list_files(pid, wip_id, ruta_wip, recursive=True)) if wip_id else []
+        nuevas[sub["id"]] = [wip_id, ruta_wip] if wip_id else None
+        for f in archivos:
             out.append({**f, "proyecto": sub["name"]})
+    if subcarpeta:
+        try:
+            ubic_p.parent.mkdir(parents=True, exist_ok=True)
+            ubic_p.write_text(json.dumps({"guardado": ubic.get("guardado") if ubic else datetime.now().isoformat(timespec="seconds"),
+                                          "proyectos": nuevas}, ensure_ascii=False), encoding="utf-8")
+        except Exception:
+            pass
     log.info("Recorridos %d archivos en %d proyectos (subcarpeta=%s)", len(out), len({x['proyecto'] for x in out}), subcarpeta or "(todo el proyecto)")
     return out, pid, avisos
 
