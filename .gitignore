@@ -22,3 +22,5 @@ revit_addin_sync/obj/
 # Nunca subir credenciales, por si algun dia aparecen en un archivo local
 .env
 *.env
+
+Automation/actualizar_todos*.log
