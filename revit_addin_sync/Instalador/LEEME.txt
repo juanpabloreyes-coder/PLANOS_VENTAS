@@ -1,0 +1,29 @@
+SheetSync - PLANOS_VENTAS
+==========================
+
+Que es esto?
+------------
+Un pequeño complemento de Revit que, cada vez que haces "Sincronizar con
+central", guarda la lista de hojas del modelo en un archivo de texto.
+Eso es todo lo que hace. No modifica el modelo, no envia nada a internet,
+no abre ventanas, no interrumpe tu trabajo.
+
+Como instalarlo
+----------------
+1. Copia esta carpeta completa a tu computadora (o ábrela directo si ya
+   la tienes en red).
+2. Haz doble clic en "instalar.bat".
+3. Abre Revit. Si sale un aviso de seguridad que dice "Unsigned Add-In",
+   dale clic en "Always Load". Solo aparece la primera vez.
+
+Listo, no hay que hacer nada mas. A partir de ahi, cada sincronizacion
+que hagas se registra sola.
+
+Como quitarlo
+--------------
+Si en algun momento ya no lo quieres, haz doble clic en "desinstalar.bat"
+y desaparece por completo. Ningun rastro queda en Revit ni en tu equipo.
+
+Dudas
+-----
+Cualquier cosa, pregúntale a Juan Pablo.

@@ -1,270 +1,622 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
-  <title>__TITULO__</title>
-  <style>
-    :root {
-      --page: #f5f5f7; --surface: #fff; --ink: #1d1d1f; --secondary: #424245; --tertiary: #86868b;
-      --blue: #007aff; --purple: #af52de; --teal: #30b0c7; --orange: #ff9500; --red: #ff3b30; --gray: #8e8e93;
-      --line: rgba(0, 0, 0, .06); --control: rgba(120, 120, 128, .12);
-      --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 24px rgba(0, 0, 0, .06);
-      --ease: cubic-bezier(.22, 1, .36, 1);
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 18px; }
-    body { margin: 0; background: var(--page); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Inter, sans-serif; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-    button, input, select { font: inherit; } button, select { cursor: pointer; } a { color: inherit; } svg { display: block; }
-    .skip-link { position: fixed; left: 18px; top: -80px; z-index: 200; padding: 10px 16px; border-radius: 999px; background: var(--blue); color: #fff; text-decoration: none; transition: top .2s var(--ease); }
-    .skip-link:focus { top: 18px; }
-    .button:focus-visible, .segment:focus-visible, .icon-button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid rgba(0, 122, 255, .3); outline-offset: 2px; }
-    .shell { width: min(100%, 1720px); min-height: 100vh; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 22px; align-items: start; }
-    main { width: 100%; min-width: 0; padding: 0 0 38px; }
-    .sidebar { position: sticky; top: 20px; height: calc(100vh - 40px); padding: 27px 24px; border: 1px solid rgba(255, 255, 255, .9); border-radius: 28px; background: rgba(255, 255, 255, .82); box-shadow: var(--shadow); -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%); overflow: auto; }
-    .brand { display: flex; align-items: center; gap: 11px; }
-    .brand-mark { width: 42px; height: 42px; flex: none; display: grid; place-items: center; border-radius: 13px; background: linear-gradient(145deg, var(--blue), var(--purple)); color: #fff; font-size: 12px; font-weight: 800; }
-    .brand strong { display: block; font-size: 13px; letter-spacing: .07em; } .brand span { display: block; margin-top: 4px; color: var(--tertiary); font-size: 11px; }
-    .side-block { margin-top: 34px; }
-    .side-eyebrow { display: block; color: var(--tertiary); font-size: 10px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
-    .side-ring { --pct: 0; --ring: var(--blue); width: 158px; height: 158px; margin: 20px auto; border-radius: 50%; display: grid; place-items: center; position: relative; background: conic-gradient(var(--ring) calc(var(--pct) * 1%), rgba(120, 120, 128, .16) 0); }
-    .side-ring:after { position: absolute; inset: 23px; border-radius: 50%; background: #fff; content: ""; }
-    .side-ring-center { position: relative; z-index: 1; text-align: center; }
-    .side-ring-center strong { display: block; font-size: 30px; font-weight: 800; line-height: 1; letter-spacing: -.03em; }
-    .side-ring-center span { display: block; margin-top: 5px; color: var(--tertiary); font-size: 10px; text-transform: uppercase; }
-    .side-counts { display: grid; grid-template-columns: repeat(3, 1fr); border-block: 1px solid var(--line); }
-    .side-count { padding: 13px 4px; text-align: center; } .side-count + .side-count { border-left: 1px solid var(--line); }
-    .side-count small { display: block; color: var(--tertiary); font-size: 9px; text-transform: uppercase; }
-    .side-count strong { display: block; margin-top: 5px; font-size: 16px; font-weight: 750; }
-    .side-list { margin: 12px 0 0; padding: 0; list-style: none; }
-    .side-item { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--tertiary); font-size: 11px; }
-    .side-item strong { max-width: 128px; overflow: hidden; color: var(--ink); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-    .side-foot { margin-top: 26px; color: var(--tertiary); font-size: 10px; }
-    .side-dot { width: 7px; height: 7px; display: inline-block; margin-right: 6px; border-radius: 50%; background: #34c759; }
-    @media (max-width: 900px) { .shell { display: block; padding: 12px; } .sidebar { position: relative; top: 0; height: auto; margin-bottom: 14px; } }
-    h1, h2, h3, p { margin-top: 0; }
-    .section { margin-top: 38px; padding-top: 16px; }
-    .section:first-child { margin-top: 0; }
-    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 20px; }
-    .section-heading h2 { margin-bottom: 6px; font-size: clamp(1.8rem, 4vw, 2.7rem); font-weight: 730; letter-spacing: -.035em; line-height: 1.04; }
-    .section-heading p { max-width: 680px; margin-bottom: 0; color: var(--tertiary); line-height: 1.5; }
-    .button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 19px; border: 0; border-radius: 999px; background: var(--control); color: var(--ink); font-weight: 650; text-decoration: none; transition: transform .2s var(--ease), background .2s ease; }
-    .button:hover { transform: translateY(-1px); background: rgba(120, 120, 128, .18); }
-    .filters { position: relative; z-index: 3; display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin-bottom: 18px; padding: 13px; border: 1px solid var(--line); border-radius: 22px; background: rgba(255, 255, 255, .78); box-shadow: 0 1px 2px rgba(0, 0, 0, .025); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%); }
-    .field { min-width: 190px; display: grid; gap: 6px; }
-    .field.pills { min-width: 0; flex: 1 1 340px; }
-    .field-label, .field label { padding-left: 12px; color: var(--tertiary); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-    .pill-nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 5px; border-radius: 18px; background: var(--control); }
-    .pill { min-height: 34px; padding: 0 13px; border: 0; border-radius: 13px; background: transparent; color: var(--secondary); font-size: 12px; font-weight: 650; white-space: nowrap; transition: background .18s ease, color .18s ease, box-shadow .18s ease; }
-    .pill:hover { background: rgba(0, 0, 0, .05); }
-    .pill.is-active { background: var(--blue); color: #fff; box-shadow: 0 6px 14px rgba(0, 122, 255, .24); }
-    .select-wrap { position: relative; }
-    .select-wrap::after { position: absolute; top: 50%; right: 15px; width: 7px; height: 7px; border-right: 1.5px solid var(--tertiary); border-bottom: 1.5px solid var(--tertiary); content: ""; pointer-events: none; transform: translateY(-70%) rotate(45deg); }
-    select, input[type="search"] { width: 100%; height: 44px; padding: 0 39px 0 15px; border: 0; border-radius: 999px; background: var(--control); color: var(--ink); outline: 0; -webkit-appearance: none; appearance: none; }
-    input[type="search"] { padding-right: 16px; } input[type="search"]::placeholder { color: var(--tertiary); }
-    .filters .button { margin-left: auto; }
-    .kpi-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-    .card { border: 1px solid var(--line); border-radius: 24px; background: var(--surface); box-shadow: var(--shadow); }
-    .kpi { min-height: 176px; padding: 24px; transition: transform .28s var(--ease), box-shadow .28s var(--ease); }
-    .kpi:hover { transform: translateY(-3px); box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 14px 34px rgba(0,0,0,.08); }
-    .kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 29px; }
-    .kpi-label { color: var(--secondary); font-size: 14px; font-weight: 650; }
-    .kpi-icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px; background: rgba(0, 122, 255, .1); color: var(--blue); }
-    .kpi-icon.purple { color: var(--purple); background: rgba(175, 82, 222, .1); } .kpi-icon.teal { color: var(--teal); background: rgba(48, 176, 199, .12); }
-    .kpi-icon.orange { color: var(--orange); background: rgba(255, 149, 0, .12); } .kpi-icon.red { color: var(--red); background: rgba(255, 59, 48, .1); }
-    .kpi-icon.gray { color: var(--gray); background: rgba(142, 142, 147, .12); }
-    .kpi-value { margin: 0 0 5px; font-size: clamp(2.1rem, 4vw, 3.25rem); font-weight: 730; letter-spacing: -.045em; line-height: 1; font-variant-numeric: tabular-nums; }
-    .kpi-note { margin: 0; color: var(--tertiary); font-size: 13px; line-height: 1.4; }
-    .insight-strip { display: grid; grid-template-columns: 1.15fr .85fr; gap: 14px; margin-top: 14px; }
-    .panel { padding: 26px; }
-    .panel-header { display: flex; align-items: start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
-    .panel-header h3 { margin-bottom: 6px; font-size: 1.22rem; font-weight: 720; letter-spacing: -.025em; }
-    .panel-header p { margin-bottom: 0; color: var(--tertiary); font-size: 13px; line-height: 1.45; }
-    .legend { display: flex; flex-wrap: wrap; gap: 13px; color: var(--tertiary); font-size: 12px; }
-    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
-    .legend-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); } .legend-dot.purple { background: var(--purple); }
-    .coverage-chart { display: grid; gap: 18px; }
-    .coverage-row { display: grid; grid-template-columns: 104px 1fr 48px; align-items: center; gap: 12px; }
-    .coverage-label { overflow: hidden; font-size: 13px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
-    .coverage-bars { display: grid; gap: 5px; }
-    .bar-track { height: 8px; overflow: hidden; border-radius: 999px; background: rgba(120, 120, 128, .1); }
-    .bar-fill { width: 0; height: 100%; border-radius: inherit; background: var(--blue); transform-origin: left; transition: width .7s var(--ease); }
-    .bar-fill.exact { background: var(--purple); }
-    .coverage-value { color: var(--secondary); font-size: 13px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
-    .status-list { display: grid; gap: 17px; }
-    .status-row { display: grid; grid-template-columns: 13px minmax(120px, 1fr) 48px; align-items: center; gap: 10px; }
-    .status-swatch { width: 10px; height: 10px; border-radius: 50%; }
-    .status-text { display: grid; gap: 7px; } .status-name { color: var(--secondary); font-size: 13px; font-weight: 620; }
-    .status-track { height: 5px; overflow: hidden; border-radius: 999px; background: rgba(120, 120, 128, .1); }
-    .status-fill { height: 100%; border-radius: inherit; transition: width .7s var(--ease); }
-    .status-count { font-size: 13px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
-    .table-card { overflow: hidden; } .table-toolbar { padding: 23px 24px 18px; }
-    .segmented { display: inline-flex; max-width: 100%; gap: 2px; padding: 3px; overflow-x: auto; border-radius: 999px; background: var(--control); scrollbar-width: none; }
-    .segmented::-webkit-scrollbar { display: none; }
-    .segment { min-height: 34px; padding: 0 13px; border: 0; border-radius: 999px; background: transparent; color: var(--secondary); font-size: 12px; font-weight: 650; white-space: nowrap; transition: background .18s ease, box-shadow .18s ease, color .18s ease; }
-    .segment.is-active { background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .12); color: var(--ink); }
-    .detail-controls { display: grid; grid-template-columns: minmax(0, 1fr) 280px; align-items: center; gap: 13px; margin-top: 15px; }
-    .result-count { color: var(--tertiary); font-size: 13px; }
-    .table-scroll { overflow: auto; border-top: 1px solid var(--line); }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { position: sticky; z-index: 1; top: 0; padding: 13px 16px; background: rgba(250, 250, 252, .96); color: var(--tertiary); font-size: 11px; font-weight: 720; letter-spacing: .045em; text-align: left; text-transform: uppercase; white-space: nowrap; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
-    td { max-width: 280px; padding: 14px 16px; border-top: 1px solid var(--line); color: var(--secondary); line-height: 1.4; vertical-align: middle; }
-    tbody tr { transition: background .18s ease; } tbody tr:hover { background: rgba(0, 122, 255, .035); }
-    .cell-project, .cell-number { color: var(--ink); font-weight: 650; white-space: nowrap; }
-    .cell-name { min-width: 220px; } .cell-file { min-width: 260px; }
-    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 999px; background: var(--control); color: var(--secondary); font-size: 11px; font-weight: 700; white-space: nowrap; }
-    .badge::before { width: 6px; height: 6px; border-radius: 50%; background: var(--gray); content: ""; }
-    .badge.exact { background: rgba(48, 176, 199, .11); color: #167486; } .badge.exact::before { background: var(--teal); }
-    .badge.number { background: rgba(0, 122, 255, .1); color: #0067d9; } .badge.number::before { background: var(--blue); }
-    .badge.name { background: rgba(255, 149, 0, .11); color: #a45f00; } .badge.name::before { background: var(--orange); }
-    .badge.none { background: rgba(255, 59, 48, .09); color: #c82b23; } .badge.none::before { background: var(--red); }
-    .badge.nomodel { background: rgba(142, 142, 147, .14); color: #636366; }
-    .pagination { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 15px 18px; border-top: 1px solid var(--line); color: var(--tertiary); font-size: 12px; }
-    .pagination-actions { display: flex; gap: 7px; }
-    .icon-button { width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--control); color: var(--ink); transition: transform .18s var(--ease), opacity .18s ease; }
-    .icon-button:hover:not(:disabled) { transform: scale(1.05); } .icon-button:disabled { opacity: .34; cursor: default; }
-    .empty-state { padding: 54px 20px; color: var(--tertiary); text-align: center; }
-    .method-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 14px; }
-    .method-card { padding: 28px; } .method-card h3 { margin-bottom: 15px; font-size: 1.25rem; letter-spacing: -.025em; }
-    .method-card p, .method-card li { color: var(--secondary); line-height: 1.62; }
-    .method-card ul { margin: 0; padding-left: 19px; } .method-card li + li { margin-top: 9px; }
-    .definition { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: start; } .definition + .definition { margin-top: 18px; }
-    .definition-index { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px; background: rgba(0,122,255,.1); color: var(--blue); font-size: 12px; font-weight: 750; }
-    .definition:nth-child(even) .definition-index { background: rgba(175,82,222,.1); color: var(--purple); }
-    .definition strong { display: block; margin-bottom: 4px; font-size: 14px; } .definition p { margin: 0; color: var(--tertiary); font-size: 13px; }
-    .notice { margin-bottom: 14px; padding: 14px 18px; border: 1px solid rgba(255, 149, 0, .3); border-radius: 18px; background: rgba(255, 149, 0, .08); color: #7a4700; font-size: 13px; line-height: 1.5; }
-    .footer { display: flex; justify-content: space-between; gap: 20px; padding: 44px 4px 0; color: var(--tertiary); font-size: 12px; }
-    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .65s var(--ease), transform .65s var(--ease); }
-    .reveal.is-visible { opacity: 1; transform: none; }
-    @media (max-width: 960px) { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .insight-strip, .method-grid { grid-template-columns: 1fr; } }
-    @media (max-width: 680px) { .section { margin-top: 22px; } .section-heading { align-items: start; flex-direction: column; } .filters { align-items: stretch; } .field { min-width: 100%; } .filters .button { width: 100%; margin-left: 0; } .kpi-grid { grid-template-columns: 1fr; } .kpi { min-height: 154px; } .panel { padding: 20px; } .panel-header { flex-direction: column; } .coverage-row { grid-template-columns: 82px 1fr 43px; gap: 9px; } .detail-controls { grid-template-columns: 1fr; } .table-toolbar { padding: 18px 16px; } .footer { flex-direction: column; } }
-    @media (hover: none), (pointer: coarse) { .kpi:hover, .button:hover { transform: none; } }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } .reveal { opacity: 1; transform: none; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>__TITULO__</title>
+<style>
+
+        :root {
+            --page: #f5f5f7;
+            --surface: #fff;
+            --primary: #1d1d1f;
+            --secondary: #424245;
+            --tertiary: #86868b;
+            --blue: #007aff;
+            --purple: #af52de;
+            --teal: #30b0c7;
+            --gray: #8e8e93;
+            --orange: #ff9500;
+            --red: #ff3b30;
+            --line: rgba(0, 0, 0, .06);
+            --control: rgba(120, 120, 128, .12);
+            --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 24px rgba(0, 0, 0, .06);
+            --spring: cubic-bezier(.2, .85, .25, 1.15);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 122px; }
+        body {
+            margin: 0;
+            min-width: 320px;
+            background: var(--page);
+            color: var(--primary);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Inter, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+        button, input { font: inherit; }
+        button { color: inherit; }
+        a { color: inherit; }
+        svg { width: 22px; height: 22px; display: block; }
+
+        .dock-shell {
+            position: fixed;
+            z-index: 1000;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: calc(100vw - 24px);
+        }
+        .dock {
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+            padding: 8px 10px 9px;
+            overflow: visible;
+            border: 1px solid rgba(0, 0, 0, .08);
+            border-radius: 22px;
+            background: rgba(255, 255, 255, .72);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .09), inset 0 1px 0 rgba(255, 255, 255, .7);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            backdrop-filter: blur(30px) saturate(180%);
+        }
+        .dock-item {
+            position: relative;
+            display: grid;
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            place-items: center;
+            border-radius: 13px;
+            color: #6e6e73;
+            text-decoration: none;
+            transform-origin: center top;
+            transition: color .22s ease, background .22s ease, transform .1s ease-out;
+            will-change: transform;
+        }
+        .dock-item:hover { color: var(--primary); background: rgba(120, 120, 128, .09); }
+        .dock-item.active { color: var(--blue); background: rgba(0, 122, 255, .11); }
+        .dock-item.active::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -6px;
+            width: 4px;
+            height: 4px;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: var(--blue);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .82);
+        }
+        .dock-tooltip {
+            position: absolute;
+            left: 50%;
+            top: calc(100% + 14px);
+            width: max-content;
+            max-width: 190px;
+            padding: 6px 9px;
+            transform: translate(-50%, -4px) scale(.96);
+            border: 1px solid rgba(0, 0, 0, .08);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, .9);
+            box-shadow: 0 5px 18px rgba(0, 0, 0, .12);
+            color: var(--secondary);
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1.2;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .16s ease, transform .2s var(--spring);
+            -webkit-backdrop-filter: blur(18px);
+            backdrop-filter: blur(18px);
+        }
+        .dock-item:hover .dock-tooltip,
+        .dock-item:focus-visible .dock-tooltip { opacity: 1; transform: translate(-50%, 0) scale(1); }
+
+        .page { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 132px 0 80px; }
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(280px, .7fr);
+            gap: 48px;
+            align-items: center;
+            min-height: 390px;
+            padding: 54px 58px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 18px;
+            color: var(--tertiary);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .eyebrow-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 5px rgba(48, 176, 199, .12); }
+        h1 {
+            margin: 0;
+            font-size: clamp(42px, 5vw, 66px);
+            font-weight: 700;
+            letter-spacing: -.04em;
+            line-height: 1.02;
+        }
+        h1 span { display: block; }
+        .gradient-title {
+            padding-bottom: .08em;
+            background: linear-gradient(100deg, var(--blue), var(--purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .health-title { margin-top: .28em; font-size: .56em; letter-spacing: -.025em; line-height: 1.08; }
+        .hero-copy { max-width: 640px; margin: 24px 0 0; color: var(--secondary); font-size: 17px; line-height: 1.5; }
+        .file-meta { display: grid; gap: 7px; margin-top: 30px; color: var(--tertiary); font-size: 12px; line-height: 1.45; }
+        .file-meta-row { display: flex; gap: 8px; align-items: flex-start; min-width: 0; }
+        .file-meta-row svg { width: 15px; height: 15px; margin-top: 1px; flex: 0 0 auto; }
+        .file-path { overflow-wrap: anywhere; }
+
+        .score-panel { display: grid; justify-items: center; gap: 22px; }
+        .score-ring {
+            --score-color: var(--teal);
+            position: relative;
+            display: grid;
+            width: 210px;
+            height: 210px;
+            place-items: center;
+            border-radius: 50%;
+            background: conic-gradient(var(--score-color) calc(var(--score) * 1%), rgba(120, 120, 128, .11) 0);
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .03), 0 12px 32px rgba(0, 0, 0, .08);
+        }
+        .score-ring::before { content: ""; position: absolute; inset: 13px; border-radius: 50%; background: #fff; box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05); }
+        .score-red { --score-color: var(--red); }
+        .score-orange { --score-color: var(--orange); }
+        .score-green { --score-color: var(--teal); }
+        .score-value { position: relative; text-align: center; }
+        .score-number { display: block; font-size: 58px; font-weight: 700; letter-spacing: -.055em; line-height: 1; color: var(--primary); }
+        .score-label { display: block; margin-top: 7px; color: var(--tertiary); font-size: 12px; font-weight: 650; letter-spacing: .02em; }
+        .score-caption { margin: 0; color: var(--secondary); font-size: 13px; text-align: center; }
+
+        .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 14px 0 28px; }
+        .metric {
+            min-height: 126px;
+            padding: 24px 26px;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+        .metric-label { display: flex; align-items: center; gap: 8px; color: var(--tertiary); font-size: 12px; font-weight: 650; }
+        .metric-label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+        .metric.pass .metric-label { color: var(--teal); }
+        .metric.fail .metric-label { color: var(--red); }
+        .metric.total .metric-label { color: var(--blue); }
+        .metric-number { margin-top: 11px; font-size: 34px; font-weight: 700; letter-spacing: -.035em; line-height: 1; }
+
+        .models-panel {
+            margin-bottom: 34px;
+            padding: 26px;
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+        .models-panel-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 17px; }
+        .models-panel-title { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.025em; }
+        .models-panel-copy { margin: 6px 0 0; color: var(--tertiary); font-size: 12px; line-height: 1.45; }
+        .model-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .model-option {
+            position: relative;
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: center;
+            min-width: 0;
+            padding: 13px;
+            border: 1px solid rgba(0, 0, 0, .07);
+            border-radius: 16px;
+            background: #fafafd;
+            color: var(--primary);
+            text-align: left;
+            cursor: pointer;
+            transition: transform .25s var(--spring), background .2s ease, border-color .2s ease, box-shadow .2s ease;
+        }
+        .model-option:hover { transform: translateY(-2px); background: #fff; border-color: rgba(0, 0, 0, .12); }
+        .model-option.active { border-color: rgba(0, 122, 255, .28); background: rgba(0, 122, 255, .055); box-shadow: 0 0 0 3px rgba(0, 122, 255, .08); }
+        .model-option-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 13px; background: rgba(0, 122, 255, .1); color: var(--blue); }
+        .model-option.link .model-option-icon { background: rgba(175, 82, 222, .1); color: var(--purple); }
+        .model-option-icon svg { width: 20px; height: 20px; }
+        .model-option-copy { min-width: 0; }
+        .model-option-kind { display: block; margin-bottom: 4px; color: var(--tertiary); font-size: 9px; font-weight: 750; letter-spacing: .075em; text-transform: uppercase; }
+        .model-option-name { display: block; overflow: hidden; color: var(--primary); font-size: 13px; font-weight: 680; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+        .model-option-path { display: block; margin-top: 4px; overflow: hidden; color: var(--tertiary); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+        .model-option-score { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: var(--control); color: var(--secondary); font-size: 11px; font-weight: 750; font-variant-numeric: tabular-nums; }
+        .model-option.has-failures .model-option-score { background: rgba(255, 59, 48, .1); color: var(--red); }
+        .model-option.no-failures .model-option-score { background: rgba(48, 176, 199, .11); color: var(--teal); }
+        .unavailable-note { display: flex; gap: 9px; align-items: flex-start; margin-top: 14px; padding: 11px 13px; border-radius: 13px; background: rgba(255, 149, 0, .09); color: #9a5b00; font-size: 11px; line-height: 1.45; }
+        .unavailable-note svg { width: 17px; height: 17px; flex: 0 0 auto; }
+        .model-report { display: none; }
+        .model-report.active { display: block; }
+
+        .toolbar {
+            position: sticky;
+            z-index: 100;
+            top: 86px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 44px;
+            padding: 10px;
+            border: 1px solid rgba(0, 0, 0, .06);
+            border-radius: 20px;
+            background: rgba(245, 245, 247, .78);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            backdrop-filter: blur(24px) saturate(160%);
+        }
+        .search-wrap { position: relative; flex: 1 1 320px; max-width: 470px; }
+        .search-wrap > svg { position: absolute; left: 14px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: var(--tertiary); pointer-events: none; }
+        .search-input {
+            width: 100%;
+            height: 42px;
+            padding: 0 42px;
+            border: 0;
+            border-radius: 999px;
+            outline: 0;
+            background: var(--control);
+            color: var(--primary);
+            font-size: 14px;
+            transition: box-shadow .2s ease, background .2s ease;
+        }
+        .search-input::placeholder { color: var(--tertiary); }
+        .search-input:focus { background: rgba(120, 120, 128, .09); box-shadow: 0 0 0 3px rgba(0, 122, 255, .16); }
+        .clear-search {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            display: grid;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            transform: translateY(-50%);
+            place-items: center;
+            border: 0;
+            border-radius: 50%;
+            background: transparent;
+            color: var(--tertiary);
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .clear-search.visible { opacity: 1; pointer-events: auto; }
+        .clear-search svg { width: 15px; height: 15px; }
+        .toolbar-actions { display: flex; gap: 8px; align-items: center; }
+        .segmented { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--control); }
+        .segment {
+            min-height: 36px;
+            padding: 0 14px;
+            border: 0;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--secondary);
+            font-size: 12px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: background .2s ease, box-shadow .2s ease, transform .2s var(--spring);
+        }
+        .segment:active, .pill-button:active { transform: scale(.96); }
+        .segment.active { background: #fff; color: var(--primary); box-shadow: 0 1px 2px rgba(0, 0, 0, .12), 0 2px 7px rgba(0, 0, 0, .06); }
+        .pill-button {
+            display: inline-flex;
+            min-height: 42px;
+            gap: 7px;
+            align-items: center;
+            padding: 0 16px;
+            border: 0;
+            border-radius: 999px;
+            background: var(--control);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: transform .2s var(--spring), background .2s ease;
+        }
+        .pill-button:hover { background: rgba(120, 120, 128, .17); }
+        .pill-button.primary { background: var(--blue); color: #fff; }
+        .pill-button.primary:hover { background: #0071eb; }
+        .pill-button svg { width: 17px; height: 17px; }
+
+        .section { margin-top: 58px; }
+        .section.is-hidden, .check-card.is-hidden { display: none; }
+        .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin: 0 4px 18px; }
+        .section-kicker { margin: 0 0 6px; color: var(--blue); font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+        .section-title { margin: 0; font-size: clamp(25px, 3vw, 34px); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; }
+        .section-count { flex: 0 0 auto; padding: 7px 11px; border-radius: 999px; background: var(--control); color: var(--tertiary); font-size: 11px; font-weight: 650; }
+        .check-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .check-card {
+            --accent: var(--blue);
+            position: relative;
+            min-width: 0;
+            padding: 24px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            transition: transform .32s var(--spring), box-shadow .25s ease, border-color .25s ease;
+        }
+        .check-card:hover { transform: translateY(-3px); border-color: rgba(0, 0, 0, .1); box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 14px 34px rgba(0, 0, 0, .08); }
+        .check-card.has-table { grid-column: 1 / -1; }
+        .check-card.pass { --accent: var(--teal); }
+        .check-card.fail { --accent: var(--red); }
+        .check-card.info { --accent: var(--blue); }
+        .card-top { display: flex; gap: 16px; align-items: flex-start; }
+        .status-icon { display: grid; width: 42px; height: 42px; flex: 0 0 42px; place-items: center; border-radius: 13px; background: color-mix(in srgb, var(--accent) 11%, transparent); color: var(--accent); }
+        .status-icon svg { width: 21px; height: 21px; }
+        .card-copy { min-width: 0; flex: 1; }
+        .status-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .status-pill { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .025em; }
+        .status-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .result-count { color: var(--tertiary); font-size: 11px; font-variant-numeric: tabular-nums; }
+        .check-title { margin: 11px 0 0; color: var(--primary); font-size: 17px; font-weight: 700; letter-spacing: -.018em; line-height: 1.25; }
+        .check-summary { margin: 10px 0 0; color: var(--secondary); font-size: 13px; line-height: 1.55; }
+
+        details { margin-top: 20px; border-top: 1px solid var(--line); }
+        details > summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 17px 0 0;
+            list-style: none;
+            color: var(--blue);
+            font-size: 12px;
+            font-weight: 650;
+            cursor: pointer;
+            user-select: none;
+        }
+        details > summary::-webkit-details-marker { display: none; }
+        .chevron { width: 18px; height: 18px; transition: transform .28s var(--spring); }
+        details[open] .chevron { transform: rotate(180deg); }
+        .table-scroll { margin-top: 14px; overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; white-space: nowrap; }
+        th, td { padding: 11px 14px; border: 0; border-bottom: 1px solid var(--line); text-align: left; }
+        th { position: sticky; top: 0; background: #f9f9fb; color: var(--tertiary); font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+        td { color: var(--secondary); }
+        tbody tr:last-child td { border-bottom: 0; }
+        tbody tr:hover td { background: rgba(0, 122, 255, .035); }
+
+        .empty-state { display: none; margin: 56px 0; padding: 44px; border: 1px solid var(--line); border-radius: 22px; background: #fff; text-align: center; box-shadow: var(--shadow); }
+        .empty-state.visible { display: block; }
+        .empty-state-icon { display: grid; width: 52px; height: 52px; margin: 0 auto 15px; place-items: center; border-radius: 17px; background: rgba(0, 122, 255, .1); color: var(--blue); }
+        .empty-state h2 { margin: 0; font-size: 20px; letter-spacing: -.02em; }
+        .empty-state p { margin: 8px 0 0; color: var(--tertiary); font-size: 13px; }
+        .results-note { margin: 20px 4px 0; color: var(--tertiary); font-size: 12px; }
+        .footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 72px; padding: 26px 4px 0; border-top: 1px solid rgba(0, 0, 0, .08); color: var(--tertiary); font-size: 11px; }
+
+        .reveal { opacity: 0; transform: translateY(14px); transition: opacity .55s ease, transform .65s var(--spring); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        :focus-visible { outline: 3px solid rgba(0, 122, 255, .34); outline-offset: 3px; }
+
+        @supports not (color: color-mix(in srgb, red, blue)) {
+            .status-icon { background: rgba(120, 120, 128, .1); }
+        }
+        @media (max-width: 900px) {
+            .hero { grid-template-columns: 1fr; gap: 42px; padding: 44px; }
+            .score-panel { grid-template-columns: auto 1fr; justify-items: start; }
+            .score-ring { width: 174px; height: 174px; }
+            .score-number { font-size: 48px; }
+            .metrics { grid-template-columns: repeat(2, 1fr); }
+            .model-tabs { grid-template-columns: 1fr; }
+            .toolbar { align-items: stretch; flex-direction: column; }
+            .search-wrap { max-width: none; flex-basis: auto; }
+            .toolbar-actions { justify-content: space-between; }
+        }
+        @media (max-width: 680px) {
+            html { scroll-padding-top: 110px; }
+            .dock-shell { top: 10px; width: calc(100vw - 20px); }
+            .dock { justify-content: flex-start; overflow-x: auto; overflow-y: hidden; border-radius: 18px; scrollbar-width: none; }
+            .dock::-webkit-scrollbar { display: none; }
+            .dock-tooltip { display: none; }
+            .page { width: min(100% - 24px, 1180px); padding-top: 104px; }
+            .hero { min-height: 0; padding: 32px 24px; border-radius: 24px; }
+            h1 { font-size: clamp(39px, 13vw, 60px); }
+            .hero-copy { font-size: 15px; }
+            .score-panel { grid-template-columns: 1fr; justify-items: center; }
+            .metrics { grid-template-columns: 1fr; }
+            .models-panel { padding: 20px; }
+            .metric { min-height: 0; }
+            .toolbar { top: 78px; margin-bottom: 34px; }
+            .toolbar-actions { align-items: stretch; flex-direction: column; }
+            .segmented { width: 100%; }
+            .segment { flex: 1; padding: 0 10px; }
+            .pill-button { justify-content: center; }
+            .check-grid { grid-template-columns: 1fr; }
+            .check-card.has-table { grid-column: auto; }
+            .section { margin-top: 46px; }
+            .footer { flex-direction: column; }
+        }
+        @media (hover: none), (pointer: coarse) {
+            .dock-item { transform: none !important; }
+            .check-card:hover { transform: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+            .dock-item { transform: none !important; }
+            .reveal { opacity: 1; transform: none; }
+        }
+        @media print {
+            @page { margin: 14mm; }
+            body { background: #fff; }
+            .dock-shell, .toolbar, .pill-button, .empty-state { display: none !important; }
+            .page { width: 100%; padding: 0; }
+            .hero, .metric, .check-card { box-shadow: none; break-inside: avoid; }
+            .hero { min-height: 0; }
+            .reveal { opacity: 1; transform: none; }
+            .section { break-before: auto; }
+            details { break-inside: auto; }
+        }
+    /* ===== Piezas propias de ISSUES dentro del lenguaje del Checker ===== */
+.check-card.warn { --accent: var(--orange); }
+.x-preview-badge { position: fixed; z-index: 1100; right: 18px; bottom: 18px; padding: 8px 14px; border-radius: 999px; background: rgba(29,29,31,.86); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .04em; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+.filters-body { display: grid; gap: 16px; margin-top: 18px; }
+.filters-row { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 16px; align-items: end; }
+.filters-row.three { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 240px; }
+.f-label { display: block; margin: 0 0 7px; color: var(--tertiary); font-size: 10px; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 15px; background: var(--control); }
+.chip { border: 0; padding: 7px 12px; border-radius: 11px; background: transparent; color: var(--secondary); font-size: 12px; font-weight: 650; cursor: pointer; transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .2s var(--spring); }
+.chip:hover { color: var(--primary); }
+.chip:active { transform: scale(.96); }
+.chip.active { background: #fff; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,.1), 0 3px 10px rgba(0,0,0,.05); }
+.chip small { margin-left: 4px; color: var(--tertiary); font-weight: 600; }
+.sel { width: 100%; height: 40px; padding: 0 34px 0 14px; border: 0; border-radius: 13px; background: var(--control) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 12px center/16px; color: var(--primary); font: inherit; font-size: 13px; font-weight: 600; appearance: none; -webkit-appearance: none; cursor: pointer; }
+.sel:focus { outline: none; box-shadow: 0 0 0 4px rgba(0,122,255,.18); }
+.active-filters { display: flex; flex-wrap: wrap; gap: 6px; min-height: 0; }
+.af { display: inline-flex; align-items: center; gap: 6px; padding: 5px 6px 5px 11px; border-radius: 999px; background: rgba(0,122,255,.1); color: var(--blue); font-size: 11px; font-weight: 700; }
+.af button { display: grid; place-items: center; width: 18px; height: 18px; border: 0; border-radius: 50%; background: rgba(0,122,255,.16); color: var(--blue); cursor: pointer; font-size: 12px; line-height: 1; }
+.check-card.selectable .card-top { cursor: pointer; }
+.check-card.selected { box-shadow: 0 0 0 2px var(--blue), 0 12px 32px rgba(0,122,255,.14); }
+.pick-hint { color: var(--tertiary); font-size: 11px; font-weight: 600; }
+.mini-ring { --p: 0; --c: var(--teal); position: relative; display: grid; width: 92px; height: 92px; flex: 0 0 92px; place-items: center; border-radius: 50%; background: conic-gradient(var(--c) calc(var(--p) * 1%), rgba(120,120,128,.11) 0); }
+.mini-ring::before { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: #fff; }
+.mini-ring b { position: relative; font-size: 21px; letter-spacing: -.04em; }
+.disc-body { display: flex; gap: 22px; align-items: center; margin-top: 16px; }
+.disc-stats { display: grid; grid-template-columns: repeat(3, auto); gap: 4px 22px; }
+.disc-stats span { color: var(--tertiary); font-size: 10px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.disc-stats b { font-size: 22px; letter-spacing: -.03em; }
+.rank-list { display: grid; gap: 12px; margin-top: 18px; }
+.rank { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: center; }
+.rank-no { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: var(--control); color: var(--secondary); font-size: 12px; font-weight: 800; }
+.rank:first-child .rank-no { background: var(--blue); color: #fff; }
+.rank-label { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+.rank-label span { color: var(--secondary); font-weight: 700; font-variant-numeric: tabular-nums; }
+.rank-label small { color: var(--tertiary); font-weight: 600; margin-left: 6px; }
+.bar { height: 7px; margin-top: 7px; border-radius: 99px; background: var(--control); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--teal), var(--blue), var(--purple)); transition: width .6s var(--spring); }
+tr.team-row td { background: #f4f8ff; font-weight: 700; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+th.num { text-align: right; }
+td.ok { color: #248a3d; font-weight: 700; }
+td.rate { color: var(--blue); font-weight: 700; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; color: var(--secondary); font-size: 11px; font-weight: 650; }
+.legend i { width: 18px; height: 3px; border-radius: 3px; background: var(--blue); }
+.legend i.teal { background: #1aa6a6; }
+.canvas-wrap { position: relative; height: 260px; margin-top: 16px; }
+.canvas-wrap canvas { width: 100%; height: 100%; display: block; }
+.detail-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 220px)); gap: 12px; margin-top: 16px; }
+.st { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; background: var(--control); color: var(--secondary); }
+.st.closed, .st.completed, .st.cerrado, .st.completado { background: rgba(52,199,89,.14); color: #248a3d; }
+.st.open, .st.abierto, .st.pending, .st.pendiente, .st.draft, .st.in-review { background: rgba(255,149,0,.14); color: #b86e00; }
+tr[data-issue] { cursor: pointer; transition: background .15s ease; }
+tr[data-issue]:hover td { background: rgba(0,122,255,.05); }
+tr[data-issue].selected td { background: rgba(0,122,255,.1); }
+td.wrap { white-space: normal; min-width: 220px; }
+.issue-desc { display: none; margin-top: 16px; padding: 18px 20px; border-radius: 16px; background: linear-gradient(135deg, rgba(0,122,255,.07), rgba(175,82,222,.06)); border: 1px solid rgba(0,122,255,.12); }
+.issue-desc.visible { display: block; animation: aparecer .35s var(--spring); }
+@keyframes aparecer { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.issue-desc h4 { margin: 4px 0 0; font-size: 16px; }
+.issue-desc .meta { color: var(--tertiary); font-size: 12px; font-weight: 600; }
+.issue-desc p { margin: 10px 0 0; color: var(--secondary); font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+.note { margin: 12px 0 0; color: var(--tertiary); font-size: 11px; }
+.empty-mini { padding: 18px; color: var(--tertiary); font-size: 13px; text-align: center; }
+@media (max-width: 900px) { .filters-row, .filters-row.three { grid-template-columns: 1fr; } .detail-controls { grid-template-columns: 1fr; } }
+@media print { .x-preview-badge { display: none; } }
+/* ===== Compartido por los reportes con el diseño del Checker (AUDITORÍA) ===== */
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+.score-ring.dyn { --score-color: var(--ring-color, var(--ring, var(--teal))); background: conic-gradient(var(--score-color) calc(var(--pct, 0) * 1%), rgba(120, 120, 128, .11) 0); }
+.score-number.sm { font-size: 46px; }
+.score-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; width: 100%; max-width: 280px; margin-top: 4px; }
+.score-stats div { padding: 9px 6px; border-radius: 13px; background: var(--control); text-align: center; }
+.score-stats small { display: block; color: var(--tertiary); font-size: 9px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.score-stats strong { display: block; margin-top: 3px; font-size: 19px; letter-spacing: -.03em; }
+.metrics.auto { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.metric-note { margin: 8px 0 0; color: var(--tertiary); font-size: 12px; line-height: 1.4; }
+.metric.warn .metric-label { color: var(--orange); }
+.metric.purple .metric-label { color: var(--purple); }
+.metric.warn .metric-label::before { background: var(--orange); }
+.metric.purple .metric-label::before { background: var(--purple); }
+.view-strip { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+.view-strip div { display: inline-flex; gap: 6px; align-items: baseline; padding: 6px 11px; border-radius: 10px; background: #f6f6f8; font-size: 12px; }
+.view-strip span { color: var(--tertiary); font-weight: 600; }
+.view-strip strong { color: var(--primary); font-weight: 700; }
+.tb-hide { display: none !important; }
+.card-body { margin-top: 18px; }
+.chart-box { position: relative; height: 300px; margin-top: 16px; }
+.chart-box canvas { width: 100% !important; }
+.chart-off { display: grid; place-items: center; height: 100%; color: var(--tertiary); font-size: 12px; text-align: center; }
+.check-card .table-scroll table th { position: sticky; top: 0; z-index: 1; }
+.na { color: var(--tertiary); }
+tr.empty-row td { padding: 22px; color: var(--tertiary); text-align: center; }
+.check-card.is-hidden { display: none; }
+
+
+.pill { border: 0; padding: 7px 12px; border-radius: 11px; background: transparent; color: var(--secondary); font: inherit; font-size: 12px; font-weight: 650; cursor: pointer; transition: background .2s ease, color .2s ease, box-shadow .2s ease; }
+.pill:hover { color: var(--primary); }
+.pill.is-active { background: #fff; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,.1), 0 3px 10px rgba(0,0,0,.05); }
+.segment.is-active { background: #fff; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,.1), 0 3px 10px rgba(0,0,0,.05); }
+.legend { display: flex; gap: 14px; }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; color: var(--secondary); font-size: 11px; font-weight: 650; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--blue); }
+.legend-dot.purple { background: var(--purple); }
+.coverage-chart { display: grid; gap: 14px; margin-top: 18px; }
+.coverage-row { display: grid; grid-template-columns: minmax(90px, 140px) 1fr 60px; gap: 14px; align-items: center; }
+.coverage-label { overflow: hidden; font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.coverage-bars { display: grid; gap: 5px; }
+.coverage-bars .bar-track { height: 7px; border-radius: 99px; background: var(--control); overflow: hidden; }
+.coverage-bars .bar-fill { height: 100%; border-radius: 99px; background: var(--blue); transition: width .6s var(--spring); }
+.coverage-bars .bar-fill.exact { background: var(--purple); }
+.coverage-value { color: var(--secondary); font-size: 13px; font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+.status-list { display: grid; gap: 14px; margin-top: 18px; }
+.comp-row { display: grid; grid-template-columns: 10px 1fr auto; gap: 12px; align-items: center; }
+.status-swatch { width: 10px; height: 10px; border-radius: 50%; }
+.status-text { display: grid; gap: 6px; }
+.status-name { font-size: 13px; font-weight: 700; }
+.status-track { display: block; height: 6px; border-radius: 99px; background: var(--control); overflow: hidden; }
+.status-fill { display: block; height: 100%; border-radius: 99px; }
+.status-count { font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 800; background: var(--control); color: var(--secondary); }
+.badge.exact { background: rgba(48,176,199,.14); color: #127e93; }
+.badge.number { background: rgba(0,122,255,.1); color: var(--blue); }
+.badge.name { background: rgba(255,149,0,.14); color: #b86e00; }
+.badge.none { background: rgba(255,59,48,.1); color: #d70015; }
+.badge.nomodel { background: rgba(142,142,147,.14); color: #636366; }
+.cell-project { font-weight: 700; }
+.cell-number { font-variant-numeric: tabular-nums; font-weight: 700; }
+.cell-name { white-space: normal; min-width: 220px; }
+.cell-file { color: var(--tertiary); }
+.table-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-top: 16px; }
+.table-tools .segmented { flex-wrap: wrap; }
+.detail-controls2 { display: flex; gap: 10px; align-items: center; }
+.detail-controls2 input { height: 38px; min-width: 240px; padding: 0 14px; border: 0; border-radius: 12px; background: var(--control); font: inherit; font-size: 13px; }
+.detail-controls2 input:focus { outline: none; box-shadow: 0 0 0 4px rgba(0,122,255,.18); }
+.pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; color: var(--tertiary); font-size: 12px; font-weight: 600; }
+.pagination-actions { display: flex; gap: 6px; }
+.icon-button { width: 34px; height: 34px; border: 0; border-radius: 10px; background: var(--control); font-size: 15px; cursor: pointer; }
+.icon-button:disabled { opacity: .4; cursor: default; }
+.definition { display: grid; grid-template-columns: 36px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.definition:first-of-type { margin-top: 14px; }
+.definition-index { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: rgba(0,122,255,.1); color: var(--blue); font-size: 12px; font-weight: 800; }
+.definition strong { font-size: 13px; }
+.definition p { margin: 3px 0 0; color: var(--secondary); font-size: 12px; line-height: 1.5; }
+.method-list { margin: 14px 0 0; padding-left: 18px; color: var(--secondary); font-size: 13px; line-height: 1.6; }
+@media (max-width: 900px) { .coverage-row { grid-template-columns: 1fr; } .detail-controls2 input { min-width: 0; width: 100%; } }
+
+</style>
 </head>
 <body>
-  <a class="skip-link" href="#contenido">Saltar al contenido</a>
-  <div class="shell">
-    <aside class="sidebar">
-      <div class="brand"><div class="brand-mark">PL</div><div><strong>PLANOS REPORT</strong><span id="brand-sub">Forma vs Revit</span></div></div>
-      <section class="side-block">
-        <span class="side-eyebrow">Viene de Revit</span>
-        <div class="side-ring" id="side-ring"><div class="side-ring-center"><strong id="side-pct">0%</strong><span>de Revit</span></div></div>
-        <div class="side-counts">
-          <div class="side-count"><small>Planos</small><strong id="side-total">0</strong></div>
-          <div class="side-count"><small>De Revit</small><strong id="side-revit">0</strong></div>
-          <div class="side-count"><small>Exactos</small><strong id="side-exact">0</strong></div>
-        </div>
-      </section>
-      <section class="side-block">
-        <span class="side-eyebrow">Vista actual</span>
-        <ul class="side-list">
-          <li class="side-item"><span>Proyecto</span><strong id="side-project">Todos</strong></li>
-          <li class="side-item"><span>Disciplina</span><strong id="side-discipline">Todas</strong></li>
-          <li class="side-item"><span>Equipo</span><strong id="side-team">Todos</strong></li>
-          <li class="side-item"><span>Periodo</span><strong id="side-period">Todos</strong></li>
-          <li class="side-item"><span>Integrante</span><strong id="side-member">Todos</strong></li>
-          <li class="side-item"><span>Sin número Revit</span><strong id="side-missing">0</strong></li>
-        </ul>
-      </section>
-      <div class="side-foot"><span class="side-dot"></span>Archivo HTML autónomo</div>
-    </aside>
+<div class="dock-shell"><nav class="dock" id="dock" aria-label="Secciones del reporte"><a class="dock-item active" href="#summary" data-target="summary" aria-label="Panorama general"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg><span class="dock-tooltip">Panorama general</span></a><a class="dock-item" href="#filtros" data-target="filtros" aria-label="Filtros"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span class="dock-tooltip">Filtros</span></a><a class="dock-item" href="#proyectos" data-target="proyectos" aria-label="Cobertura por proyecto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4.5 7.8 7.5 4.1 7.5-4.1"/><path d="M12 12v9"/></svg><span class="dock-tooltip">Cobertura por proyecto</span></a><a class="dock-item" href="#integrantes" data-target="integrantes" aria-label="Clasificación por integrante"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2A4.5 4.5 0 0 1 20.5 19"/></svg><span class="dock-tooltip">Clasificación por integrante</span></a><a class="dock-item" href="#detalle" data-target="detalle" aria-label="Detalle de planos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="dock-tooltip">Detalle de planos</span></a><a class="dock-item" href="#faltantes" data-target="faltantes" aria-label="Hojas sin plano"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 20H3L12 4Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg><span class="dock-tooltip">Hojas sin plano</span></a><a class="dock-item" href="#metodologia" data-target="metodologia" aria-label="Cómo se compara"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M8 7h7"/></svg><span class="dock-tooltip">Cómo se compara</span></a></nav></div><main class="page" id="contenido"><section class="hero reveal" id="summary"><div class="hero-content"><p class="eyebrow"><span class="eyebrow-dot"></span>Planos · VENTAS GCP</p><h1><span>Seguimiento de planos.</span><span class="gradient-title health-title" id="brand-sub">Forma vs Revit</span></h1><p class="hero-copy">Panorama general: compara los planos publicados en Forma contra las hojas de los modelos Revit. Los indicadores se recalculan al seleccionar proyecto, disciplina, equipo, periodo o integrante.</p><div class="file-meta"><div class="file-meta-row"><svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/></svg><span class="file-path">Archivo HTML autónomo · PLANOS_VENTAS</span></div><div class="file-meta-row"><svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="generated-at">Actualización: —</span></div></div></div><div class="score-panel"><div class="score-ring dyn" id="side-ring"><div class="score-value"><span class="score-number" id="side-pct">0%</span><span class="score-label">DE REVIT</span></div></div><div class="score-stats"><div><small>Planos</small><strong id="side-total">0</strong></div><div><small>De Revit</small><strong id="side-revit">0</strong></div><div><small>Exactos</small><strong id="side-exact">0</strong></div></div></div></section><section class="metrics auto reveal" aria-live="polite"><article class="metric total"><div class="metric-label">Planos Forma</div><div class="metric-number" id="kpi-total">—</div><p class="metric-note">Archivos incluidos por la regla de formato.</p></article><article class="metric total"><div class="metric-label">Con número Revit</div><div class="metric-number" id="kpi-revit">—</div><p class="metric-note">Mismo proyecto y número normalizado.</p></article><article class="metric pass"><div class="metric-label">% viene de Revit</div><div class="metric-number" id="kpi-percent">—</div><p class="metric-note">Sobre planos de proyectos con modelo Revit.</p></article><article class="metric purple"><div class="metric-label">Coincidencia exacta</div><div class="metric-number" id="kpi-exact">—</div><p class="metric-note">Coinciden número y nombre normalizados.</p></article><article class="metric warn"><div class="metric-label">% exacto</div><div class="metric-number" id="kpi-exact-percent">—</div><p class="metric-note">Criterio estricto sobre planos comparables.</p></article><article class="metric fail"><div class="metric-label">Sin número Revit</div><div class="metric-number" id="kpi-missing">—</div><p class="metric-note">Requieren revisión o fuente distinta.</p></article></section><section class="models-panel reveal" id="filtros"><header class="models-panel-head"><div><h2 class="models-panel-title">Filtros del reporte</h2><p class="models-panel-copy">Los indicadores, la cobertura, los integrantes y el detalle se recalculan con estos filtros.</p></div></header><div class="filters-body"><div class="filters-row"><div><span class="f-label">Proyecto</span><div class="chips" id="project-filter" role="group" aria-label="Filtrar por proyecto"></div></div><div><label class="f-label" for="member-filter">Integrante</label><select class="sel" id="member-filter"></select></div></div><div class="filters-row three"><div><span class="f-label">Disciplina</span><div class="chips" id="discipline-filter" role="group" aria-label="Filtrar por disciplina"></div></div><div><span class="f-label">Equipo</span><div class="chips" id="team-filter" role="group" aria-label="Filtrar por equipo"></div></div><div><span class="f-label">Periodo</span><div class="chips" id="period-filter" role="group" aria-label="Filtrar por periodo"></div></div></div><div class="view-strip"><div><span>Proyecto</span><strong id="side-project">Todos</strong></div><div><span>Disciplina</span><strong id="side-discipline">Todas</strong></div><div><span>Equipo</span><strong id="side-team">Todos</strong></div><div><span>Periodo</span><strong id="side-period">Todos</strong></div><div><span>Integrante</span><strong id="side-member">Todos</strong></div><div><span>Sin número Revit</span><strong id="side-missing">0</strong></div></div></div></section><section class="toolbar" aria-label="Herramientas del reporte"><label class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input class="search-input" id="search" type="search" autocomplete="off" placeholder="Buscar plano, proyecto, integrante o archivo…" aria-label="Buscar en el reporte"><button class="clear-search" id="clear-search" type="button" aria-label="Limpiar búsqueda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></svg></button></label><div class="toolbar-actions"><div class="segmented" role="group" aria-label="Filtrar"><button class="segment tb-seg active" type="button" data-filter="ALL">Todos</button><button class="segment tb-seg" type="button" data-filter="PASS">Correctos</button><button class="segment tb-seg" type="button" data-filter="FAIL">Atención</button></div><button class="pill-button" id="toggle-details" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 3-5 5m0-5v5h5M16 21l5-5m0 5v-5h-5"/></svg><span>Expandir</span></button><button class="pill-button" id="reset-filters" type="button"><span>Restablecer filtros</span></button><button class="pill-button primary" id="print-report" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8V3h10v5"/><rect x="4" y="8" width="16" height="9" rx="2"/><path d="M7 14h10v7H7z"/></svg><span>Imprimir</span></button></div></section><section class="section reveal" id="proyectos"><header class="section-heading"><div><p class="section-kicker" data-kicker>Portafolio · Área de revisión</p><h2 class="section-title">COBERTURA POR PROYECTO</h2></div><span class="section-count" id="cnt-proyectos"></span></header><div class="check-grid"><article class="check-card info"><div class="card-top"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19h16"/><path d="M7 16V9M12 16V5M17 16v-4"/></svg></div><div class="card-copy"><div class="status-row"><span class="status-pill">Procedencia Revit</span><span class="result-count"><span class="legend"><span class="legend-item"><i class="legend-dot"></i>Número</span><span class="legend-item"><i class="legend-dot purple"></i>Exacta</span></span></span></div><h3 class="check-title">Procedencia Revit</h3><p class="check-summary">Porcentaje sobre los planos Forma comparables del proyecto. El azul indica que el número existe en Revit; el púrpura exige además que coincida el nombre.</p></div></div><div class="coverage-chart" id="coverage-chart" data-buscable></div></article><article class="check-card info"><div class="card-top"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg></div><div class="card-copy"><div class="status-row"><span class="status-pill">Composición</span><span class="result-count"></span></div><h3 class="check-title">Composición</h3><p class="check-summary">Resultado de la comparación en el conjunto filtrado.</p></div></div><div class="status-list" id="status-list"></div></article><article class="check-card info has-table"><div class="card-top"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg></div><div class="card-copy"><div class="status-row"><span class="status-pill">Resumen</span><span class="result-count"></span></div><h3 class="check-title">Resumen de proyectos</h3><p class="check-summary">Cantidades y porcentajes exactos usados en el reporte. Proyecto = carpeta de primer nivel dentro de Project Files.</p></div></div><div class="table-scroll"><table><thead><tr><th>Proyecto</th><th>Planos Forma</th><th>Con número Revit</th><th>% viene de Revit</th><th>Exactos</th><th>% exacto</th></tr></thead><tbody id="project-table-body" data-buscable></tbody></table></div></article></div></section><section class="section reveal" id="integrantes"><header class="section-heading"><div><p class="section-kicker" data-kicker>Portafolio · Área de revisión</p><h2 class="section-title">CLASIFICACIÓN POR INTEGRANTE</h2></div><span class="section-count" id="cnt-integrantes"></span></header><div class="check-grid"><article class="check-card info has-table"><div class="card-top"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2A4.5 4.5 0 0 1 20.5 19"/></svg></div><div class="card-copy"><div class="status-row"><span class="status-pill">Integrantes</span><span class="result-count"></span></div><h3 class="check-title">Clasificación por integrante</h3><p class="check-summary">Responsable del modelo Revit que hizo match con cada plano (quien trabajó el modelo, no quien publicó el PDF), cruzado con «Equipos e integrantes - VENTAS».</p></div></div><div class="table-scroll" style="max-height:420px"><table><thead><tr><th>Equipo</th><th>Integrante</th><th>Planos Forma</th><th>Con número Revit</th><th>% viene de Revit</th><th>Exactos</th><th>% exacto</th></tr></thead><tbody id="member-table-body" data-buscable></tbody></table></div></article></div></section><section class="section reveal" id="detalle"><header class="section-heading"><div><p class="section-kicker" data-kicker>Portafolio · Área de revisión</p><h2 class="section-title">DETALLE DE PLANOS</h2></div><span class="section-count" id="cnt-detalle"></span></header><div class="check-grid"><article class="check-card info has-table"><div class="card-top"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><div class="card-copy"><div class="status-row"><span class="status-pill">Detalle</span><span class="result-count" id="result-count">—</span></div><h3 class="check-title">Detalle de planos</h3><p class="check-summary">Una fila por archivo Forma. La búsqueda opera sobre proyecto, número, nombre, disciplina, integrante y archivo.</p></div></div><div class="table-tools"><div class="segmented" id="status-segments" role="group" aria-label="Filtrar por resultado"><button class="segment is-active" type="button" data-status="Todos" aria-pressed="true">Todos</button><button class="segment" type="button" data-status="Coincide número y nombre" aria-pressed="false">Exacta</button><button class="segment" type="button" data-status="Coincide solo número" aria-pressed="false">Solo número</button><button class="segment" type="button" data-status="Coincide solo nombre" aria-pressed="false">Solo nombre</button><button class="segment" type="button" data-status="Sin coincidencia" aria-pressed="false">Sin coincidencia</button><button class="segment" type="button" data-status="Sin modelo Revit" aria-pressed="false">Sin modelo Revit</button></div><div class="detail-controls2"><input id="search-input" type="search" placeholder="Buscar plano, archivo o integrante…" aria-label="Buscar en el detalle"></div></div><div class="table-scroll"><table><thead><tr><th>Proyecto</th><th>Número</th><th>Nombre del plano</th><th>Disciplina</th><th>Integrante</th><th>Equipo</th><th>Resultado</th><th>Archivo Forma</th><th>Número Revit</th><th>Nombre Revit</th></tr></thead><tbody id="detail-table-body"></tbody></table><div class="empty-mini" id="empty-state" hidden>No hay planos que coincidan con estos filtros.</div></div><div class="pagination"><span id="page-label">Página 1 de 1</span><div class="pagination-actions"><button class="icon-button" id="prev-page" type="button" aria-label="Página anterior">←</button><button class="icon-button" id="next-page" type="button" aria-label="Página siguiente">→</button></div></div></article></div></section><section class="section reveal" id="faltantes"><header class="section-heading"><div><p class="section-kicker" data-kicker>Portafolio · Área de revisión</p><h2 class="section-title">HOJAS REVIT SIN PLANO EN FORMA</h2></div><span class="section-count" id="cnt-faltantes"></span></header><div class="check-grid"><article class="check-card warn has-table"><div class="card-top"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 21 20H3L12 4Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></div><div class="card-copy"><div class="status-row"><span class="status-pill">Pendientes de publicar</span><span class="result-count"></span></div><h3 class="check-title">Hojas Revit sin plano en Forma</h3><p class="check-summary">Hojas que existen en los modelos Revit del proyecto y no tienen archivo con ese número en Forma.</p></div></div><div class="table-scroll" style="max-height:360px"><table><thead><tr><th>Proyecto</th><th>Número</th><th>Nombre de la hoja</th></tr></thead><tbody id="missing-body" data-buscable></tbody></table><div class="empty-mini" id="missing-empty" hidden>No hay hojas pendientes de publicar.</div></div></article></div></section><section class="section reveal" id="metodologia"><header class="section-heading"><div><p class="section-kicker" data-kicker>Portafolio · Área de revisión</p><h2 class="section-title">CÓMO SE COMPARA</h2></div><span class="section-count">2 checks</span></header><div class="check-grid"><article class="check-card info"><div class="card-top"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Z"/><path d="M8 7h7"/></svg></div><div class="card-copy"><div class="status-row"><span class="status-pill">Metodología</span><span class="result-count"></span></div><h3 class="check-title">Criterios</h3><p class="check-summary">Definiciones transparentes para interpretar los porcentajes sin ocultar diferencias.</p></div></div><div class="definition"><span class="definition-index">01</span><div><strong>Viene de Revit</strong><p>El número de plano normalizado existe en las hojas de los modelos Revit del mismo proyecto.</p></div></div><div class="definition"><span class="definition-index">02</span><div><strong>Coincidencia exacta</strong><p>Además del número, coincide el nombre después de normalizar mayúsculas, acentos y puntuación.</p></div></div><div class="definition"><span class="definition-index">03</span><div><strong>Proyecto</strong><p>Carpeta de primer nivel dentro de Project Files donde vive el archivo.</p></div></div><div class="definition"><span class="definition-index">04</span><div><strong>Integrante</strong><p>Responsable del MODELO REVIT que hizo match con el plano («Version added by» del .rvt), cruzado con la lista de equipos e integrantes — no quien subió el PDF a Forma. Sin modelo que haga match, o sin coincidencia en la lista, queda «Sin integrante asignado».</p></div></div></article><article class="check-card info"><div class="card-top"><div class="status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg></div><div class="card-copy"><div class="status-row"><span class="status-pill">Metodología</span><span class="result-count"></span></div><h3 class="check-title">Notas de lectura</h3></div></div><ul class="method-list"><li>Los nombres no usan coincidencia difusa; una diferencia real permanece visible.</li><li>Coincidir en número y nombre no prueba por sí solo que el PDF se generó en Revit: es una comparación de nombres.</li><li id="quality-note">—</li></ul></article></div></section><footer class="footer"><span id="footer-title">Reporte Planos Revit · Dashboard HTML independiente</span><span>Planos · GCPEASA · PLANOS_VENTAS</span></footer></main>
 
-    <main id="contenido">
-      <section class="section reveal" id="resumen" aria-labelledby="resumen-title">
-        <div class="section-heading"><div><h2 id="resumen-title">Panorama general</h2><p>Los indicadores se recalculan al seleccionar proyecto, disciplina, equipo o integrante.</p></div></div>
-        <div class="filters" aria-label="Filtros generales">
-          <div class="field pills"><span class="field-label">Proyecto</span><div class="pill-nav" id="project-filter" role="group" aria-label="Filtrar por proyecto"></div></div>
-          <div class="field pills"><span class="field-label">Disciplina</span><div class="pill-nav" id="discipline-filter" role="group" aria-label="Filtrar por disciplina"></div></div>
-          <div class="field pills"><span class="field-label">Equipo</span><div class="pill-nav" id="team-filter" role="group" aria-label="Filtrar por equipo"></div></div>
-          <div class="field pills"><span class="field-label">Periodo</span><div class="pill-nav" id="period-filter" role="group" aria-label="Filtrar por periodo"></div></div>
-          <div class="field"><label for="member-filter">Integrante</label><div class="select-wrap"><select id="member-filter"></select></div></div>
-          <button class="button" id="reset-filters" type="button">Restablecer</button>
-        </div>
-        <div class="kpi-grid" aria-live="polite">
-          <article class="card kpi"><div class="kpi-top"><span class="kpi-label">Planos Forma</span><span class="kpi-icon gray" aria-hidden="true">F</span></div><p class="kpi-value" id="kpi-total">—</p><p class="kpi-note">Archivos incluidos por la regla de formato.</p></article>
-          <article class="card kpi"><div class="kpi-top"><span class="kpi-label">Con número Revit</span><span class="kpi-icon" aria-hidden="true">R</span></div><p class="kpi-value" id="kpi-revit">—</p><p class="kpi-note">Mismo proyecto y número normalizado.</p></article>
-          <article class="card kpi"><div class="kpi-top"><span class="kpi-label">% viene de Revit</span><span class="kpi-icon teal" aria-hidden="true">%</span></div><p class="kpi-value" id="kpi-percent">—</p><p class="kpi-note">Sobre planos de proyectos con modelo Revit.</p></article>
-          <article class="card kpi"><div class="kpi-top"><span class="kpi-label">Coincidencia exacta</span><span class="kpi-icon purple" aria-hidden="true">✓</span></div><p class="kpi-value" id="kpi-exact">—</p><p class="kpi-note">Coinciden número y nombre normalizados.</p></article>
-          <article class="card kpi"><div class="kpi-top"><span class="kpi-label">% exacto</span><span class="kpi-icon orange" aria-hidden="true">%</span></div><p class="kpi-value" id="kpi-exact-percent">—</p><p class="kpi-note">Criterio estricto sobre planos comparables.</p></article>
-          <article class="card kpi"><div class="kpi-top"><span class="kpi-label">Sin número Revit</span><span class="kpi-icon red" aria-hidden="true">!</span></div><p class="kpi-value" id="kpi-missing">—</p><p class="kpi-note">Requieren revisión o fuente distinta.</p></article>
-        </div>
-      </section>
+<script>
 
-      <section class="section reveal" id="proyectos" aria-labelledby="projects-title">
-        <div class="section-heading"><div><h2 id="projects-title">Cobertura por proyecto</h2><p>El azul indica que el número existe en Revit; el púrpura exige además que coincida el nombre. Proyecto = carpeta de primer nivel dentro de Project Files.</p></div></div>
-        <div class="insight-strip">
-          <article class="card panel">
-            <div class="panel-header"><div><h3>Procedencia Revit</h3><p>Porcentaje sobre los planos Forma comparables del proyecto.</p></div>
-              <div class="legend"><span class="legend-item"><i class="legend-dot"></i>Número</span><span class="legend-item"><i class="legend-dot purple"></i>Exacta</span></div></div>
-            <div class="coverage-chart" id="coverage-chart"></div>
-          </article>
-          <article class="card panel"><div class="panel-header"><div><h3>Composición</h3><p>Resultado de la comparación en el conjunto filtrado.</p></div></div><div class="status-list" id="status-list"></div></article>
-        </div>
-        <article class="card table-card" style="margin-top:14px">
-          <div class="table-toolbar"><div class="panel-header" style="margin-bottom:0"><div><h3>Resumen de proyectos</h3><p>Cantidades y porcentajes exactos usados en el reporte.</p></div></div></div>
-          <div class="table-scroll"><table><thead><tr><th>Proyecto</th><th>Planos Forma</th><th>Con número Revit</th><th>% viene de Revit</th><th>Exactos</th><th>% exacto</th></tr></thead><tbody id="project-table-body"></tbody></table></div>
-        </article>
-      </section>
-
-      <section class="section reveal" id="integrantes" aria-labelledby="members-title">
-        <div class="section-heading"><div><h2 id="members-title">Clasificación por integrante</h2><p>Responsable del modelo Revit que hizo match con cada plano (quien trabajó el modelo, no quien publicó el PDF), cruzado con «Equipos e integrantes - VENTAS».</p></div></div>
-        <article class="card table-card">
-          <div class="table-scroll" style="max-height:420px"><table><thead><tr><th>Equipo</th><th>Integrante</th><th>Planos Forma</th><th>Con número Revit</th><th>% viene de Revit</th><th>Exactos</th><th>% exacto</th></tr></thead><tbody id="member-table-body"></tbody></table></div>
-        </article>
-      </section>
-
-      <section class="section reveal" id="detalle" aria-labelledby="detail-title">
-        <div class="section-heading"><div><h2 id="detail-title">Detalle de planos</h2><p>Una fila por archivo Forma. La búsqueda opera sobre proyecto, número, nombre, disciplina, integrante y archivo.</p></div></div>
-        <article class="card table-card">
-          <div class="table-toolbar">
-            <div class="segmented" id="status-segments" role="group" aria-label="Filtrar por resultado">
-              <button class="segment is-active" type="button" data-status="Todos" aria-pressed="true">Todos</button>
-              <button class="segment" type="button" data-status="Coincide número y nombre" aria-pressed="false">Exacta</button>
-              <button class="segment" type="button" data-status="Coincide solo número" aria-pressed="false">Solo número</button>
-              <button class="segment" type="button" data-status="Coincide solo nombre" aria-pressed="false">Solo nombre</button>
-              <button class="segment" type="button" data-status="Sin coincidencia" aria-pressed="false">Sin coincidencia</button>
-              <button class="segment" type="button" data-status="Sin modelo Revit" aria-pressed="false">Sin modelo Revit</button>
-            </div>
-            <div class="detail-controls"><span class="result-count" id="result-count" aria-live="polite">—</span><input id="search-input" type="search" placeholder="Buscar plano, archivo o integrante…" aria-label="Buscar en el detalle"></div>
-          </div>
-          <div class="table-scroll">
-            <table><thead><tr><th>Proyecto</th><th>Número</th><th>Nombre del plano</th><th>Disciplina</th><th>Integrante</th><th>Equipo</th><th>Resultado</th><th>Archivo Forma</th><th>Número Revit</th><th>Nombre Revit</th></tr></thead><tbody id="detail-table-body"></tbody></table>
-            <div class="empty-state" id="empty-state" hidden>No hay planos que coincidan con estos filtros.</div>
-          </div>
-          <div class="pagination"><span id="page-label">Página 1 de 1</span><div class="pagination-actions"><button class="icon-button" id="prev-page" type="button" aria-label="Página anterior">←</button><button class="icon-button" id="next-page" type="button" aria-label="Página siguiente">→</button></div></div>
-        </article>
-      </section>
-
-      <section class="section reveal" id="faltantes" aria-labelledby="missing-title">
-        <div class="section-heading"><div><h2 id="missing-title">Hojas Revit sin plano en Forma</h2><p>Hojas que existen en los modelos Revit del proyecto y no tienen archivo con ese número en Forma.</p></div></div>
-        <article class="card table-card"><div class="table-scroll" style="max-height:360px"><table><thead><tr><th>Proyecto</th><th>Número</th><th>Nombre de la hoja</th></tr></thead><tbody id="missing-body"></tbody></table><div class="empty-state" id="missing-empty" hidden>No hay hojas pendientes de publicar.</div></div></article>
-      </section>
-
-      <section class="section reveal" id="metodologia" aria-labelledby="method-title">
-        <div class="section-heading"><div><h2 id="method-title">Cómo se compara</h2><p>Definiciones transparentes para interpretar los porcentajes sin ocultar diferencias.</p></div></div>
-        <div class="method-grid">
-          <article class="card method-card"><h3>Criterios</h3>
-            <div class="definition"><span class="definition-index">01</span><div><strong>Viene de Revit</strong><p>El número de plano normalizado existe en las hojas de los modelos Revit del mismo proyecto.</p></div></div>
-            <div class="definition"><span class="definition-index">02</span><div><strong>Coincidencia exacta</strong><p>Además del número, coincide el nombre después de normalizar mayúsculas, acentos y puntuación.</p></div></div>
-            <div class="definition"><span class="definition-index">03</span><div><strong>Proyecto</strong><p>Carpeta de primer nivel dentro de Project Files donde vive el archivo.</p></div></div>
-            <div class="definition"><span class="definition-index">04</span><div><strong>Integrante</strong><p>Responsable del MODELO REVIT que hizo match con el plano («Version added by» del .rvt), cruzado con la lista de equipos e integrantes — no quien subió el PDF a Forma. Sin modelo que haga match, o sin coincidencia en la lista, queda «Sin integrante asignado».</p></div></div>
-          </article>
-          <article class="card method-card"><h3>Notas de lectura</h3>
-            <ul>
-              <li>Los nombres no usan coincidencia difusa; una diferencia real permanece visible.</li>
-              <li>Coincidir en número y nombre no prueba por sí solo que el PDF se generó en Revit: es una comparación de nombres.</li>
-              <li id="quality-note">—</li>
-            </ul>
-          </article>
-        </div>
-      </section>
-      <footer class="footer"><span id="footer-title">Reporte Planos Revit · Dashboard HTML independiente</span><span id="generated-at">Actualización: —</span></footer>
-    </main>
-  </div>
-
-  <script>
     const DASHBOARD = __DATA__;
     const detail = DASHBOARD.detail || [];
     const NOMODEL = "Sin modelo Revit";
@@ -358,14 +710,14 @@
       $("#coverage-chart").innerHTML = projects.length ? projects.map(function(g) {
         const rp = pct(g.revit, g.comp), ep = pct(g.exact, g.comp);
         const label = g.comp ? percentFormat.format(rp) : "s/m";
-        return '<div class="coverage-row"><span class="coverage-label" title="' + escapeHtml(g.key) + '">' + escapeHtml(g.key) + '</span>' +
+        return '<div class="coverage-row" data-status="' + (g.comp ? (rp >= .8 ? "PASS" : "FAIL") : "") + '"><span class="coverage-label" title="' + escapeHtml(g.key) + '">' + escapeHtml(g.key) + '</span>' +
           '<div class="coverage-bars" aria-label="' + escapeHtml(g.key) + ': ' + label + '">' +
           '<div class="bar-track"><div class="bar-fill" style="width:' + (rp * 100).toFixed(2) + '%"></div></div>' +
           '<div class="bar-track"><div class="bar-fill exact" style="width:' + (ep * 100).toFixed(2) + '%"></div></div></div>' +
           '<span class="coverage-value" title="' + (g.comp ? "" : "Sin modelo Revit en este proyecto") + '">' + label + '</span></div>';
-      }).join("") : '<div class="empty-state">No hay datos para estos filtros.</div>';
+      }).join("") : '<div class="empty-mini">No hay datos para estos filtros.</div>';
       $("#project-table-body").innerHTML = projects.map(function(g) {
-        return '<tr><td class="cell-project">' + escapeHtml(g.key) + "</td><td>" + numberFormat.format(g.total) + "</td><td>" + numberFormat.format(g.revit) + "</td><td>" +
+        return '<tr data-status="' + (g.comp ? (pct(g.revit, g.comp) >= .8 ? "PASS" : "FAIL") : "") + '"><td class="cell-project">' + escapeHtml(g.key) + "</td><td>" + numberFormat.format(g.total) + "</td><td>" + numberFormat.format(g.revit) + "</td><td>" +
           (g.comp ? percentFormat.format(pct(g.revit, g.comp)) : "Sin modelo Revit") + "</td><td>" + numberFormat.format(g.exact) + "</td><td>" +
           (g.comp ? percentFormat.format(pct(g.exact, g.comp)) : "—") + "</td></tr>";
       }).join("");
@@ -374,7 +726,7 @@
       const m = aggregate(rows, function(r) { return (r["Equipo"] || "") + "|" + (r["Integrante"] || ""); }, function(r) { return { team: r["Equipo"], member: r["Integrante"] }; })
         .sort(function(a, b) { return b.total - a.total || cmp(a.member, b.member); });
       $("#member-table-body").innerHTML = m.map(function(g) {
-        return '<tr><td>' + escapeHtml(g.team) + '</td><td class="cell-project">' + escapeHtml(g.member) + "</td><td>" + numberFormat.format(g.total) + "</td><td>" + numberFormat.format(g.revit) + "</td><td>" +
+        return '<tr data-status="' + (g.comp ? (pct(g.revit, g.comp) >= .8 ? "PASS" : "FAIL") : "") + '"><td>' + escapeHtml(g.team) + '</td><td class="cell-project">' + escapeHtml(g.member) + "</td><td>" + numberFormat.format(g.total) + "</td><td>" + numberFormat.format(g.revit) + "</td><td>" +
           (g.comp ? percentFormat.format(pct(g.revit, g.comp)) : "—") + "</td><td>" + numberFormat.format(g.exact) + "</td><td>" + (g.comp ? percentFormat.format(pct(g.exact, g.comp)) : "—") + "</td></tr>";
       }).join("");
     }
@@ -383,7 +735,7 @@
       $("#status-list").innerHTML = statusMeta.map(function(meta) {
         const count = rows.filter(function(r) { return r["Estado comparativa"] === meta.name; }).length;
         const w = total ? count / total * 100 : 0;
-        return '<div class="status-row"><span class="status-swatch" style="background:' + meta.color + '"></span><div class="status-text"><span class="status-name">' + meta.short +
+        return '<div class="comp-row"><span class="status-swatch" style="background:' + meta.color + '"></span><div class="status-text"><span class="status-name">' + meta.short +
           '</span><span class="status-track"><span class="status-fill" style="width:' + w.toFixed(2) + '%;background:' + meta.color + '"></span></span></div><span class="status-count">' + numberFormat.format(count) + "</span></div>";
       }).join("");
     }
@@ -393,6 +745,7 @@
       state.page = Math.min(state.page, pages);
       const start = (state.page - 1) * state.pageSize, pageRows = rows.slice(start, start + state.pageSize);
       $("#result-count").textContent = numberFormat.format(rows.length) + " planos encontrados";
+      if ($("#cnt-detalle")) $("#cnt-detalle").textContent = numberFormat.format(rows.length) + " planos";
       $("#page-label").textContent = "Página " + state.page + " de " + pages;
       $("#prev-page").disabled = state.page <= 1; $("#next-page").disabled = state.page >= pages;
       $("#empty-state").hidden = rows.length !== 0;
@@ -413,6 +766,12 @@
     function render() {
       syncPills(); const rows = globalRows();
       updateKpis(rows); updateCoverage(rows); updateStatus(rows); updateMembers(rows); updateDetail(); updateMissing();
+      const np = new Set(rows.map(function(r) { return r["Proyecto"] || "Sin proyecto"; })).size;
+      $("#cnt-proyectos").textContent = np + (np === 1 ? " proyecto" : " proyectos");
+      $("#cnt-integrantes").textContent = $("#member-table-body").children.length + " integrantes";
+      $("#cnt-faltantes").textContent = (DASHBOARD.faltantes || []).filter(function(r) { return state.project === "Todos" || r["Proyecto"] === state.project; }).length + " hojas";
+      $$("[data-kicker]").forEach(function(k) { k.textContent = (state.project === "Todos" ? "Portafolio" : state.project) + " · Área de revisión"; });
+      window.TB && TB.apply();
     }
     function drawPills(el, all, values) { el.innerHTML = [all].concat(values).map(function(v) { return '<button type="button" class="pill" data-value="' + escapeHtml(v) + '" aria-pressed="false">' + escapeHtml(v) + "</button>"; }).join(""); }
     function syncPills() {
@@ -437,13 +796,13 @@
       $("#member-filter").addEventListener("change", function(e) { state.member = e.target.value; state.page = 1; render(); });
       $("#reset-filters").addEventListener("click", function() {
         state.project = "Todos"; state.discipline = "Todas"; state.team = "Todos"; state.period = "Todos"; state.member = "Todos"; state.status = "Todos"; state.search = ""; state.page = 1;
-        $("#search-input").value = "";
-        $$(".segment").forEach(function(b) { const a = b.dataset.status === "Todos"; b.classList.toggle("is-active", a); b.setAttribute("aria-pressed", String(a)); });
+        $("#search-input").value = ""; if (window.TB) TB.resetUI();
+        $$("#status-segments .segment").forEach(function(b) { const a = b.dataset.status === "Todos"; b.classList.toggle("is-active", a); b.setAttribute("aria-pressed", String(a)); });
         render();
       });
-      $$(".segment").forEach(function(b) { b.addEventListener("click", function() {
+      $$("#status-segments .segment").forEach(function(b) { b.addEventListener("click", function() {
         state.status = b.dataset.status; state.page = 1;
-        $$(".segment").forEach(function(i) { const a = i === b; i.classList.toggle("is-active", a); i.setAttribute("aria-pressed", String(a)); });
+        $$("#status-segments .segment").forEach(function(i) { const a = i === b; i.classList.toggle("is-active", a); i.setAttribute("aria-pressed", String(a)); });
         updateDetail();
       }); });
       let t; $("#search-input").addEventListener("input", function(e) { clearTimeout(t); t = setTimeout(function() { state.search = e.target.value; state.page = 1; updateDetail(); }, 120); });
@@ -465,6 +824,50 @@
         (sm.length ? " Proyectos sin modelo Revit: " + sm.join(", ") + "." : "");
     }
     fillFilters(); setupControls(); setupReveal(); setupMetadata(); render();
-  </script>
+  
+    // La busqueda de la barra superior tambien filtra el detalle de planos
+    document.addEventListener("DOMContentLoaded", function() { if (window.TB) TB.onSearch = function(q) { $("#search-input").value = q; state.search = q; state.page = 1; updateDetail(); }; });
+
+</script>
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+  // Aparicion suave al hacer scroll (igual que AUDITORIA)
+  var io = 'IntersectionObserver' in window ? new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } }); }, {threshold: .04}) : null;
+  function revelar(){ Array.prototype.forEach.call(document.querySelectorAll('.reveal:not(.visible)'), function(el){ io ? io.observe(el) : el.classList.add('visible'); }); }
+  // Dock: resalta la seccion visible
+  var items = Array.prototype.slice.call(document.querySelectorAll('.dock-item'));
+  function dock(){ var act = items[0]; items.forEach(function(a){ var el = $(a.getAttribute('data-target')); if(el && el.offsetParent !== null && el.getBoundingClientRect().top < 200) act = a; }); items.forEach(function(a){ a.classList.toggle('active', a === act); }); }
+  window.addEventListener('scroll', dock, {passive: true});
+  // Barra de herramientas: busqueda + Todos/Correctos/Atencion sobre tarjetas y filas marcadas
+  var TB = window.TB = {q: '', f: 'ALL', onSearch: null};
+  TB.apply = function(){
+    var q = TB.q.toLowerCase();
+    Array.prototype.forEach.call(document.querySelectorAll('[data-buscable]'), function(cont){
+      var hijos = cont.tagName === 'TBODY' ? cont.children : cont.children;
+      Array.prototype.forEach.call(hijos, function(el){
+        if(el.classList.contains('empty-row') || el.classList.contains('empty-mini')) return;
+        var okQ = !q || el.textContent.toLowerCase().indexOf(q) >= 0;
+        var st = el.getAttribute('data-status');
+        var okF = TB.f === 'ALL' || !st || st === TB.f;
+        el.classList.toggle('tb-hide', !(okQ && okF));
+      });
+    });
+    revelar();
+  };
+  var s = $('search'), cl = $('clear-search');
+  if(s){ s.addEventListener('input', function(){ TB.q = s.value.trim(); cl.classList.toggle('visible', !!TB.q); if(TB.onSearch) TB.onSearch(TB.q); TB.apply(); }); }
+  if(cl){ cl.addEventListener('click', function(){ s.value = ''; TB.q = ''; cl.classList.remove('visible'); if(TB.onSearch) TB.onSearch(''); TB.apply(); }); }
+  Array.prototype.forEach.call(document.querySelectorAll('.tb-seg'), function(b){ b.addEventListener('click', function(){ TB.f = b.getAttribute('data-filter'); Array.prototype.forEach.call(document.querySelectorAll('.tb-seg'), function(x){ x.classList.toggle('active', x === b); }); TB.apply(); }); });
+  var abierto = false, tg = $('toggle-details');
+  if(tg) tg.addEventListener('click', function(){ abierto = !abierto; Array.prototype.forEach.call(document.querySelectorAll('details'), function(d){ d.open = abierto; }); tg.querySelector('span').textContent = abierto ? 'Contraer' : 'Expandir'; });
+  var pr = $('print-report');
+  if(pr) pr.addEventListener('click', function(){ Array.prototype.forEach.call(document.querySelectorAll('details'), function(d){ d.open = true; }); Array.prototype.forEach.call(document.querySelectorAll('.reveal'), function(e){ e.classList.add('visible'); }); window.print(); });
+  TB.resetUI = function(){ if(s){ s.value = ''; } TB.q = ''; TB.f = 'ALL'; if(cl) cl.classList.remove('visible'); Array.prototype.forEach.call(document.querySelectorAll('.tb-seg'), function(x){ x.classList.toggle('active', x.getAttribute('data-filter') === 'ALL'); }); if(TB.onSearch) TB.onSearch(''); TB.apply(); };
+  TB.apply(); dock();
+})();
+
+</script>
 </body>
 </html>
